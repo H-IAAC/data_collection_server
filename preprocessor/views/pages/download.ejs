@@ -1,0 +1,37 @@
+<div>
+    <p>Uploaded Files:</p>
+    <% for (var i=0; i < files.pre.length; i++) { %>
+        <div>
+            <!--Don't show files with .video extension--> 
+            <% if (files.pre[i].name.substr(files.pre[i].name.length - 5) !== 'video') { %>
+                <a href="<%= files.pre[i].path %>"><%= files.pre[i].name%></a>
+            <% } %>
+        </div>
+        <% } %>
+</div>
+</br></br>
+<div>
+    <p>Post-processing:</p>
+    <% for (var i=0; i < files.post.length; i++) { %>
+        <div>
+            <!--Don't show files with .video extension--> 
+            <% if ((files.post[i].name.substr(files.post[i].name.length - 5) !== 'video') && (files.post[i].name !== 'waiting')) { %>
+                <a href="<%= files.post[i].path %>"><%= files.post[i].name%></a>
+            <% } %>
+        </div>
+        <% } %>
+</div>
+
+<section class="bottom">
+    <div class="center">
+        <button onclick="window.history.back()">Back</button>
+    </div>
+</section>
+
+<script type="text/javascript">
+
+    function onClickCard(label) {
+        window.location.href = '/coletas/files?label=' + encodeURI(label);
+    }
+
+</script>

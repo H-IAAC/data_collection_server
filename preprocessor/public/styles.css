@@ -1,0 +1,184 @@
+* {
+
+}
+
+.logo img {
+    height: 100px
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 98vh;
+    background-color: #f9f9f9;
+}
+
+.header-content {
+    display: flex;
+    justify-content: left;
+    margin: 2vh 0vh 2vh 5vh;
+}
+
+.bottom {
+    margin-bottom: 80px;
+    margin-top: 40px;
+}
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    width: 600px;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card button {
+    border: none;
+    outline: 0;
+    padding: 12px;
+    color: white;
+    background-color: #ff9d1c;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    font-size: 18px;
+}
+
+.card button:disabled {
+    border: none;
+    outline: 0;
+    padding: 12px;
+    color: white;
+    background-color: #fbbe6e;
+    text-align: center;
+    cursor: auto !important;
+    width: 100%;
+    font-size: 18px;
+}
+
+.card button:hover {
+    opacity: 0.7;
+}
+
+.card-container {
+    text-align: left;
+    padding: 2px 16px;
+}
+
+body {
+    text-align: center;
+}
+
+form {
+    display: inline-block;
+}
+
+input[type="text"] {
+    font-weight: bold;
+    margin-bottom: 20px;
+    top: 50%;
+    border-radius: 10px;
+    padding: 15px;
+    width: 100%;
+}
+
+input[type="file"] {
+    font-weight: bold;
+    color: #ff9d1c;
+    padding: 0.5em;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.btn {
+    font-weight: bold;
+    top: 50%;
+    background-color: #ff9d1c;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    width: 300px;
+}
+
+.btnBack {
+    font-weight: bold;
+    top: 50%;
+    background-color: #ff9d1c;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    width: 360px;
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2vh;
+}
+
+.footer {
+    margin-top: auto;
+    background-color: #ff9d1c;
+    color: white;
+    text-align: center;
+    height: 100px;
+    width: 100%;
+}
+
+.video_container {
+    /* width: 65%; */
+    height: inherit;
+    /* border: 1px solid black; */
+    background-color: black;
+    text-align: center;
+}
+
+video {
+    width: 100%;
+    height: inherit;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 50%;
+    height: 560px;
+    /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row {
+    text-align: left;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+select[id^="graph_selector_"] {
+    margin-left: 5px;
+}
+
+div[id^="svg_graph_"] {
+    height: 250px;
+}
+
+.graph_subtitles {
+    display: flex;
+    height: 20px;
+    justify-content: end;
+    margin-right: 10px;
+}
+
+.graph_subtitles_child {
+    margin-right: 15px;
+    margin-left: 5px;
+}

@@ -1,0 +1,25 @@
+<div class="center">
+    <form action='#' onsubmit="return false;">
+        <input type="text" id="label" placeholder="Label" />
+        <br>
+        <input type="file" id="file" accept=".mp4" onchange="videoSelected()" />
+        <br>
+        <p id="duration">&nbsp;</p>
+        <br>
+        <div class="center">
+            <button onclick="upload()" class="btn">Upload</button>
+        </div>
+        <br>
+        <div class="progressUpload"></div>
+    </form>
+</div>
+<div class="center" style="height: 20px;">
+    <p id="message"> </p>
+</div>
+<section class="bottom">
+    <div class="center">
+        <button class="btnBack" onclick="window.history.back()" class="btn">Back</button>
+    </div>
+</section>
+
+<script src="/upload/uploader.js"></script>

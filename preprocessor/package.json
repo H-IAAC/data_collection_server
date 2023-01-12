@@ -1,0 +1,23 @@
+{
+  "name": "app_de_visualizacao",
+  "version": "1.0.0",
+  "description": "app_de_visualizacao preprocessor",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eldorado",
+  "dependencies": {
+    "body-parser": "^1.18.0",
+    "csv": "^6.2.5",
+    "csv-parse": "^5.3.3",
+    "ejs": "^3.1.8",
+    "express": "^4.15.4",
+    "express-ejs-layouts": "^2.5.1",
+    "formidable": "^2.0.1",
+    "node-csv": "^0.1.2",
+    "read-last-lines": "^1.8.0",
+    "serve-favicon": "^2.5.0",
+    "winston": "^3.8.2"
+  }
+}
