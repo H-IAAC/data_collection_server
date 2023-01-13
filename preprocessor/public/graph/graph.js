@@ -18,7 +18,7 @@ class Graph {
         var self = this;
 
         // set the dimensions and margins of the graph
-        var margin = { top: 10, right: 10, bottom: 10, left: 30 },
+        var margin = { top: 10, right: 10, bottom: 10, left: 60 },
             width = 460 - margin.left - margin.right,
             height = 200 - margin.top - margin.bottom;
 
