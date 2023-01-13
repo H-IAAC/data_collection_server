@@ -30,7 +30,6 @@ class ProcessFile:
             has_video = self.has_video_files(postprocessor_directory)
             
             if not has_video:
-                print(f"No video returned, has_video [{has_video}]")
                 self.handle_csv_when_no_video(postprocessor_directory)
                 return
             
@@ -68,7 +67,7 @@ class ProcessFile:
             Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check timestamp after drop rows bigger than initial timestamp");
             return
         
-        csv_files = CsvUtils.split(csv_fullpath, postprocessor_directory)
+        csv_files = CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
         
         if not csv_files:
             print(f"    {self.filename} ignoring this file")
