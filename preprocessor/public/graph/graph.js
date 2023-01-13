@@ -96,8 +96,8 @@ class Graph {
                 ...data.map(o => o.value3), ...data.map(o => o.value3), ...data.map(o => o.value3),
             );
 
-            console.log("min: " + self.y_min_value);
-            console.log("max: " + self.y_max_value);
+            //console.log("min: " + self.y_min_value);
+            //console.log("max: " + self.y_max_value);
 
             self.y = d3.scaleLinear()
                 .domain([self.y_min_value, self.y_max_value])
@@ -171,7 +171,7 @@ class Graph {
 
         //console.log("currentTime: " + currentTime);
         //console.log("--> currentTime: " + (currentTime - 1000));
-        console.log(this.element_id + " graph_X_max_value: " + this.graph_X_max_value);
+        //console.log(this.element_id + " graph_X_max_value: " + this.graph_X_max_value);
         //console.log("--> graph_X_max_value: " + (this.graph_X_max_value + (currentTime + 1000)));
         this.x.domain([currentTime - 1000, (this.graph_X_max_value + (currentTime + 1000))]);
 
