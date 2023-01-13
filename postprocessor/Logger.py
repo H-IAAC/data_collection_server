@@ -7,5 +7,5 @@ class Logger:
         log_file = 'err.log'
         
         file_object = open(path + log_file, 'a')
-        file_object.write(msg)
+        file_object.write("LOG: " + msg + "\n")
         file_object.close()
