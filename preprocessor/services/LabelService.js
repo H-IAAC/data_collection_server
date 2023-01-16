@@ -17,6 +17,10 @@ module.exports = {
         return repo.get_directory_content(dir_path, label);
     },
 
+    label_exists(label) {
+        return repo.label_exists(label);
+    },
+
     create_label(label) {
         return repo.create_label(label);
     }
