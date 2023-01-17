@@ -13,6 +13,9 @@
                             <i onclick="onClickDelete('<%= coletas[i].label %>')" class="material-icons"
                                 style="float: right;">delete_forever</i>
                         </h3>
+                        <h4>
+                            <%= coletas[i].activity %>
+                        </h4>
                         <p>
                             <%= new Date(coletas[i].time).toString() %>
                         </p>
@@ -24,8 +27,8 @@
                         <% if (coletas[i].error > 0) { %>
                             <p style="background-color:red; text-align: center;">Post Processor Error! Check the 'err.log' file.</p>
                         <% } %>
-                        <% if (coletas[i].videoAvailable == "") { %>
-                            <p><button disabled>Watch</button></p>
+                        <% if (coletas[i].videoAvailable === false) { %>
+                            <p><button onclick="location.href='/upload?experiment=<%= coletas[i].label %>'">Upload</button></p>
                         <% } else { %>
                             <p><button onclick="onClickWatch('<%= coletas[i].label %>')">Watch</button></p>
                         <% } %>
