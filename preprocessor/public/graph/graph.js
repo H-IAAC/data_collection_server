@@ -10,8 +10,14 @@ class Graph {
     #y_min_value;
     #y_max_value;
 
-    constructor(element_id) {
+    #graph_data;
+
+    #data;
+
+    constructor(element_id, graph_data, graph_timelapse) {
         this.element_id = element_id;
+        this.graph_data = graph_data;
+        this.graph_timelapse = graph_timelapse;
     }
 
     createdGraph(csv_file, currentTime) {
@@ -32,44 +38,23 @@ class Graph {
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
 
-        /*svg.append("text")
-            .attr("x", (width / 2))
-            .attr("y", 0)
-            .attr("text-anchor", "middle")
-            .style("font-size", "10px")
-            .text(csv_file);*/
-
-
-
-        //d3.csv(data.path + data.csv[0], function (data) {
-        d3.csv(data.path + csv_file, function (data) {
+        d3.csv(self.graph_data.path + csv_file, function (data) {
             //console.log(data["Timestamp"] + " " + data["Value 1"]);
             return { date: data["Timestamp"], value1: data["Value 1"], value2: data["Value 2"], value3: data["Value 3"] }
 
         }, function (data) {
-            var graph_X_total_of_pixels_to_represent_1sec = 300;
+            self.data = data;
 
-            //console.log("d3.extent(data, function (d) { return d.date; }): " + d3.extent(data, function (d) { return d.date; }));
-            //console.log("d3.max(data, function (d) { return d.date; }): " + d3.max(data, function (d) { return d.date; }));
-            //console.log("data: " + JSON.stringify(data.slice(-1)[0].date));
-            //console.log("width: " + width);
+            var graph_X_total_of_pixels_to_represent_1sec = 300;
 
             // Number of pixels for each 1000ms in csv
             self.graph_X_max_value = Number(data.slice(-1)[0].date);
             self.graph_X_total_of_seconds = data.slice(-1)[0].date / 1000; // '1000' is use because csv data is in milisec
 
-
-            /*console.log("graph_X_max_value: " + self.graph_X_max_value );
-            console.log("graph_X_total_of_seconds: " + self.graph_X_total_of_seconds );
-            console.log("graph_X_total_of_pixels_to_represent_1sec: " + graph_X_total_of_pixels_to_represent_1sec );*/
-
             // Graph axis X
             self.x = d3.scaleLinear()
                 // domain is the range displayed
                 .domain([-1000, self.graph_X_max_value + 1000]) // from '0' to 'timestamp' value in the last csv row
-                //.domain([currentTime - 1000, (self.graph_X_max_value + (currentTime + 1000))])
-
-
 
                 // range is the pixels used to display the 'domain'
                 .range([0, self.graph_X_total_of_seconds * graph_X_total_of_pixels_to_represent_1sec]);
@@ -83,21 +68,15 @@ class Graph {
                 .attr("class", "tick tickRef")
                 .attr("transform", "translate(" + (self.x(0)) + ")");
 
-
+            // Filter CSV data to render a limited data, based on the timestamp
+            var data_limited = data.filter(function (item) {
+                return item.date <= self.graph_timelapse;
+            });
+            //console.log("data_limited stringify: " + JSON.stringify(data_limited));          
 
             // Graph axis Y
-            //console.log("data stringify: " + JSON.stringify(data));
-            self.y_min_value = Math.min(...data.map(o => o.value1), ...data.map(o => o.value2), ...data.map(o => o.value3),
-                ...data.map(o => o.value2), ...data.map(o => o.value2), ...data.map(o => o.value2),
-                ...data.map(o => o.value3), ...data.map(o => o.value3), ...data.map(o => o.value3),
-            );
-            self.y_max_value = Math.max(...data.map(o => o.value1), ...data.map(o => o.value2), ...data.map(o => o.value3),
-                ...data.map(o => o.value2), ...data.map(o => o.value2), ...data.map(o => o.value2),
-                ...data.map(o => o.value3), ...data.map(o => o.value3), ...data.map(o => o.value3),
-            );
-
-            //console.log("min: " + self.y_min_value);
-            //console.log("max: " + self.y_max_value);
+            self.y_min_value = Math.min(...data.map(o => o.value1), ...data.map(o => o.value2), ...data.map(o => o.value3));
+            self.y_max_value = Math.max(...data.map(o => o.value1), ...data.map(o => o.value2), ...data.map(o => o.value3));
 
             self.y = d3.scaleLinear()
                 .domain([self.y_min_value, self.y_max_value])
@@ -107,7 +86,7 @@ class Graph {
 
             // Value1 line
             svg.append("path")
-                .datum(data)
+                .datum(data_limited)
                 .attr("class", self.element_id + "_graphValue1")
                 .attr("fill", "none")
                 .attr("stroke", "#ff0000")
@@ -119,7 +98,7 @@ class Graph {
 
             // Value2 line
             svg.append("path")
-                .datum(data)
+                .datum(data_limited)
                 .attr("class", self.element_id + "_graphValue2")
                 .attr("fill", "none")
                 .attr("stroke", "#00ff00")
@@ -131,7 +110,7 @@ class Graph {
 
             // Value3 line
             svg.append("path")
-                .datum(data)
+                .datum(data_limited)
                 .attr("class", self.element_id + "_graphValue3")
                 .attr("fill", "none")
                 .attr("stroke", "#0000ff")
@@ -169,10 +148,6 @@ class Graph {
     update(currentTime) {
         var svg = d3.selectAll("svg");
 
-        //console.log("currentTime: " + currentTime);
-        //console.log("--> currentTime: " + (currentTime - 1000));
-        //console.log(this.element_id + " graph_X_max_value: " + this.graph_X_max_value);
-        //console.log("--> graph_X_max_value: " + (this.graph_X_max_value + (currentTime + 1000)));
         this.x.domain([currentTime - 1000, (this.graph_X_max_value + (currentTime + 1000))]);
 
         //move the xaxis left
@@ -194,35 +169,58 @@ class Graph {
             .attr("y", -5)
             .text(function (d) { return (parseInt(currentTime, 10) + "ms"); });
 
-        //move the graph left
-        /*console.log(this.element_id + " currentTime: " + currentTime);
-        console.log(this.element_id + " x(0): " + this.x(0));
-        console.log(this.element_id + " x(currentTime): " + this.x(currentTime));
-        console.log(this.element_id + " graph_X_max_value: " + this.graph_X_max_value);
-        console.log(this.element_id + " x(graph_X_max_value): " + (this.x(this.graph_X_max_value)));
-        */
+        //console.log("DATA: " + this.data);
+        var graph_timelapse = this.graph_timelapse;
+        var x = this.x;
+        var y = this.y;
+
+        // Filter CSV data to render a limited data, based on the timestamp
+        var data_limited = this.data.filter(function (item) {
+            return ((item.date <= graph_timelapse + currentTime) && (item.date > currentTime - 1000));
+        });
 
         svg.select("." + this.element_id + "_graphValue1")
+            .datum(data_limited)
+            .attr("fill", "none")
+            .attr("stroke", "#ff0000")
+            .attr("stroke-width", 1.5)
             .attr("transform", null)
             .transition()
             .delay(0)
             .duration(0)
             .ease(d3.easeLinear)
-            .attr("transform", "translate(" + (this.x(0) - this.x(currentTime)) + ")");
+            .attr("d", d3.line()
+                .x(function (d) { return x(d.date) })
+                .y(function (d) { return y(d.value1) })
+            );
+
         svg.select("." + this.element_id + "_graphValue2")
+            .datum(data_limited)
+            .attr("fill", "none")
+            .attr("stroke", "#00ff00")
+            .attr("stroke-width", 1.5)
             .attr("transform", null)
             .transition()
             .delay(0)
             .duration(0)
-            .ease(d3.easeLinear)
-            .attr("transform", "translate(" + (this.x(0) - this.x(currentTime)) + ")");
+            .attr("d", d3.line()
+                .x(function (d) { return x(d.date) })
+                .y(function (d) { return y(d.value2) })
+            );
+
         svg.select("." + this.element_id + "_graphValue3")
+            .datum(data_limited)
+            .attr("fill", "none")
+            .attr("stroke", "#0000ff")
+            .attr("stroke-width", 1.5)
             .attr("transform", null)
             .transition()
             .delay(0)
             .duration(0)
-            .ease(d3.easeLinear)
-            .attr("transform", "translate(" + (this.x(0) - this.x(currentTime)) + ")");
+            .attr("d", d3.line()
+                .x(function (d) { return x(d.date) })
+                .y(function (d) { return y(d.value3) })
+            );
 
         this.removeUnwantedXaxisValues(svg);
     }
