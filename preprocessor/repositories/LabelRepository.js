@@ -41,14 +41,40 @@ module.exports = {
 
         var files = await fs.promises.readdir(pre_dir);
 
-        return files.map(function (fileName) {
+        return files.map(function (dir_name) {
+
+            var preprocess_files = fs.readdirSync(pre_dir + dir_name);
+
+            var activity = 'activity';
+            var total_number_of_files = 0;
+            var isVideoAvailable = false;
+
+            preprocess_files.filter(file => {
+                total_number_of_files++;
+
+                if (path.extname(file).toLowerCase() === '.csv') {
+                    // Get activity string from file name.
+                    // Filename example: Server_Test5_Braço__20230112.154454
+                    activity = file.substring(0, file.indexOf('__'));
+                    activity = activity.substring(0, activity.lastIndexOf('_'));
+
+                } else if (path.extname(file).toLowerCase() === '.video') {
+                    // Do not count '.video' as a file, because it is not
+                    // uploaded by user.
+                    total_number_of_files--;
+                } else if (path.extname(file).toLowerCase() === '.mp4') {
+                    isVideoAvailable = true;
+                }
+            })
+
             return {
-                label: fileName,
-                time: fs.statSync(pre_dir + fileName).mtime.getTime(),
-                content: fs.readdirSync(pre_dir + fileName).filter(file => { return path.extname(file).toLowerCase() !== '.video'; }).length,
-                videoAvailable: fs.readdirSync(pre_dir + fileName).filter(file => { return path.extname(file).toLowerCase() === '.mp4'; }),
-                error: (fs.existsSync(post_dir + fileName)) ?
-                            fs.readdirSync(post_dir + fileName).filter(file => { return file.includes('err.log'); }).length : 0
+                label: dir_name,
+                activity: activity,
+                time: fs.statSync(pre_dir + dir_name).mtime.getTime(),
+                content: total_number_of_files,
+                videoAvailable: isVideoAvailable,
+                error: (fs.existsSync(post_dir + dir_name)) ?
+                    fs.readdirSync(post_dir + dir_name).filter(file => { return file.includes('err.log'); }).length : 0
             }
         })
             .sort(function (a, b) {
