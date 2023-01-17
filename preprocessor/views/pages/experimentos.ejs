@@ -8,9 +8,9 @@
                     <div class="card-container">
                         <h3>
                             <b>
-                                <%= experimentos[i].label %>
+                                <%= experimentos[i].experiment %>
                             </b>
-                            <i onclick="onClickDelete('<%= experimentos[i].label %>')" class="material-icons"
+                            <i onclick="onClickDelete('<%= experimentos[i].experiment %>')" class="material-icons"
                                 style="float: right;">delete_forever</i>
                         </h3>
                         <h4>
@@ -20,7 +20,7 @@
                             <%= new Date(experimentos[i].time).toString() %>
                         </p>
                         <p>
-                            <a onclick="onClickCard('<%= experimentos[i].label %>')" href="#">Conteúdo: <%=
+                            <a onclick="onClickCard('<%= experimentos[i].experiment %>')" href="#">Conteúdo: <%=
                                 experimentos[i].content %>
                                     arquivos</a>
                         </p>
@@ -28,9 +28,9 @@
                             <p style="background-color:red; text-align: center;">Post Processor Error! Check the 'err.log' file.</p>
                         <% } %>
                         <% if (experimentos[i].videoAvailable === false) { %>
-                            <p><button onclick="location.href='/upload?experiment=<%= experimentos[i].label %>'">Upload</button></p>
+                            <p><button onclick="location.href='/upload?experiment=<%= experimentos[i].experiment %>'">Upload</button></p>
                         <% } else { %>
-                            <p><button onclick="onClickWatch('<%= experimentos[i].label %>')">Watch</button></p>
+                            <p><button onclick="onClickWatch('<%= experimentos[i].experiment %>')">Watch</button></p>
                         <% } %>
                     </div>
                 </div>
@@ -45,16 +45,16 @@
 
 <script type="text/javascript">
 
-    function onClickCard(label) {
-        window.location.href = '/experimentos/download?label=' + encodeURI(label);
+    function onClickCard(experiment) {
+        window.location.href = '/experimentos/download?experiment=' + encodeURI(experiment);
     }
 
-    function onClickWatch(label) {
-        window.location.href = '/experimentos/watch?label=' + encodeURI(label);
+    function onClickWatch(experiment) {
+        window.location.href = '/experimentos/watch?experiment=' + encodeURI(experiment);
     }
 
-    function onClickDelete(label) {
-        let text = "Remover arquivos relacionados ao " + label + "?";
+    function onClickDelete(experiment) {
+        let text = "Remover arquivos relacionados ao " + experiment + "?";
         if (confirm(text) == true) {
             alert('TODO');
         }

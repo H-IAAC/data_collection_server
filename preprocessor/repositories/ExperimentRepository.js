@@ -5,37 +5,37 @@ const fs = require('fs'),
 
 module.exports = {
     /**
-     * Create a new label.
+     * Create a new experiment.
      * 
-     * @param {type} label          Label name.
-     * @return {type}               Return the label directory path.
+     * @param {type} name           Experiment name.
+     * @return {type}               Return the experiment directory path.
      */
-    create_label(label) {
-        var label_dir = consts.PREPROCESSING_DIR + label + path.sep;
+    create_experiment(name) {
+        var experiment_dir = consts.PREPROCESSING_DIR + name + path.sep;
 
-        utils.create_directory(label_dir);
+        utils.create_directory(experiment_dir);
 
-        return label_dir;
+        return experiment_dir;
     },
 
     /**
-     * Check if a label exists.
+     * Check if a experiment exists.
      * 
-     * @param {type} label          Label name.
-     * @return {type}               True if label exists, otherwise return false.
+     * @param {type} name           Experiment name.
+     * @return {type}               True if experiment exists, otherwise return false.
      */
-    label_exists(label) {
-        var label_dir = consts.PREPROCESSING_DIR + label + path.sep;
+    experiment_exists(name) {
+        var experiment_dir = consts.PREPROCESSING_DIR + name + path.sep;
 
-        return fs.existsSync(label_dir);
+        return fs.existsSync(experiment_dir);
     },
 
     /**
-     * Get info from all labels available.
+     * Get info from all experiments available.
      * 
-     * @return {array}      Array of objects containing info regarding all labels available.
+     * @return {array}      Array of objects containing info regarding all experiments available.
      */
-    async get_all_labels() {
+    async get_all_experiments() {
         var pre_dir = consts.PREPROCESSING_DIR;
         var post_dir = consts.POSTPROCESSING_DIR;
 
@@ -68,7 +68,7 @@ module.exports = {
             })
 
             return {
-                label: dir_name,
+                experiment: dir_name,
                 activity: activity,
                 time: fs.statSync(pre_dir + dir_name).mtime.getTime(),
                 content: total_number_of_files,
@@ -87,26 +87,26 @@ module.exports = {
     },
 
     /**
-     * Get pre and post-processed files from a label.
+     * Get pre and post-processed files from a experiment.
      * 
-     * @param {type} label          Label name.
-     * @return {Object}             JSON with 'pre' and 'post' fields, containing all files related to the label.
+     * @param {type} experiment     Experiment name.
+     * @return {Object}             JSON with 'pre' and 'post' fields, containing all files related to the experiment.
      */
-    async get_pre_and_post_processed_files(label) {
+    async get_pre_and_post_processed_files(experiment) {
         var files = {};
-        files.pre = await module.exports.get_directory_content(consts.PREPROCESSING_DIR + path.sep + label, label);
-        files.post = await module.exports.get_directory_content(consts.POSTPROCESSING_DIR + path.sep + label, label);
+        files.pre = await module.exports.get_directory_content(consts.PREPROCESSING_DIR + path.sep + experiment, experiment);
+        files.post = await module.exports.get_directory_content(consts.POSTPROCESSING_DIR + path.sep + experiment, experiment);
         return files;
     },
 
     /**
-     * Get post-processed video and csv from a label.
+     * Get post-processed video and csv from a experiment.
      * 
      * @param {type} dir_path       Directory where to look for files.
-     * @param {type} label          Label name.
+     * @param {type} experiment     Experiment name.
      * @return {array}              Array with all content (files) in a directory.
      */
-    async get_directory_content(dir_path, label) {
+    async get_directory_content(dir_path, experiment) {
         if (!fs.existsSync(dir_path)) {
             return [];
         }
@@ -116,7 +116,7 @@ module.exports = {
         return files.map(function (fileName) {
             return {
                 name: fileName,
-                path: path.sep + label + path.sep + fileName,
+                path: path.sep + experiment + path.sep + fileName,
                 isVideo: (fileName.split('.').pop() === 'mp4') ? true : false
             }
         }).map(function (v) {
@@ -125,13 +125,13 @@ module.exports = {
     },
 
     /**
-     * Get post-processed video and csv from a label.
+     * Get post-processed video and csv from a experiment.
      * 
-     * @param {type} label      Label name.
-     * @return {Object}         JSON object with video, csv and path info.
+     * @param {type} name           Experiment name.
+     * @return {Object}             JSON object with video, csv and path info.
      */
-    async get_label_postprocessed_data(label) {
-        var root = consts.POSTPROCESSING_DIR + path.sep + label
+    async get_experiment_postprocessed_data(name) {
+        var root = consts.POSTPROCESSING_DIR + path.sep + name
         var jsonData = {};
         var csv_files = [];
 
@@ -150,7 +150,7 @@ module.exports = {
         });
 
         jsonData.csv = csv_files;
-        jsonData.path = path.sep + label + path.sep;
+        jsonData.path = path.sep + name + path.sep;
 
         return jsonData;
     }

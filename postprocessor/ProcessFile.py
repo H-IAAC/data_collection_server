@@ -7,19 +7,19 @@ from configparser import ConfigParser
 
 class ProcessFile:
     def __init__(self, fullpath, postprocessor_path):
-        label = Path(fullpath).parts
-        self.label = str(label[-2])
+        experiment_name = Path(fullpath).parts
+        self.experiment = str(experiment_name[-2])
         self.fullpath = fullpath
         self.filename = Path(fullpath).stem
         self.extension = Path(fullpath).suffix
         self.postprocessor_path = postprocessor_path
 
     def __str__(self):
-        return f"filename: {self.fullpath} extension: {self.extension} label: {self.label}"
+        return f"filename: {self.fullpath} extension: {self.extension} experiment: {self.experiment}"
 
     def check_event(self):
-        # Create new directory based on 'label' value
-        postprocessor_directory = f".{os.sep}{self.postprocessor_path}{os.sep}{self.label}{os.sep}"
+        # Create new directory based on 'experiment' value
+        postprocessor_directory = f".{os.sep}{self.postprocessor_path}{os.sep}{self.experiment}{os.sep}"
         if not os.path.exists(postprocessor_directory):
             print(f"Create new directory:  {postprocessor_directory}")
             os.makedirs(postprocessor_directory)
@@ -58,17 +58,20 @@ class ProcessFile:
     def handle_csv(self, csv_fullpath, postprocessor_directory, video_metadata):
         metadata = self.get_video_metadata(video_metadata)
         
-        # Remove rows before and after the video timestamps
-        if not CsvUtils.drop_row_lower_than(csv_fullpath, int(metadata['startTimestamp'])):
-            Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check timestamp after drop rows lower than initial timestamp");
-            return
+        try:
+            # Remove rows before and after the video timestamps
+            if not CsvUtils.drop_row_lower_than(csv_fullpath, int(metadata['startTimestamp'])):
+                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check timestamp after drop rows lower than initial timestamp");
+                return
+                
+            if not CsvUtils.drop_row_bigger_than(csv_fullpath, int(metadata['endTimestamp'])):
+                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check timestamp after drop rows bigger than initial timestamp");
+                return
             
-        if not CsvUtils.drop_row_bigger_than(csv_fullpath, int(metadata['endTimestamp'])):
-            Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check timestamp after drop rows bigger than initial timestamp");
-            return
-        
-        csv_files = CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
-        
+            csv_files = CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
+        except:
+            Logger.log_error(postprocessor_directory, f"{self.filename} invalid file format.");
+            
         if not csv_files:
             print(f"    {self.filename} ignoring this file")
             Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! Check filename.");

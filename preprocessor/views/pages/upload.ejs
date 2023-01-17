@@ -1,6 +1,6 @@
 <div class="center">
     <form action='#' onsubmit="return false;">
-        <input type="text" id="label" placeholder="Label" />
+        <input type="text" id="exp_input" placeholder="Nome do Experimento" />
         <p id="upload_msg" hidden>Selecione o arquivo de video:</p>
         <br>
         <input type="file" id="file" accept=".mp4" onchange="videoSelected()" />
@@ -27,7 +27,7 @@
 
 <script type="text/javascript">
 
-    function onBackClicked(label) {
+    function onBackClicked() {
         if (experiment) {
             window.location.href = '/experimentos';
         } else {

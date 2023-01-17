@@ -39,7 +39,6 @@ class Graph {
                 "translate(" + margin.left + "," + margin.top + ")");
 
         d3.csv(self.graph_data.path + csv_file, function (data) {
-            //console.log(data["Timestamp"] + " " + data["Value 1"]);
             return { date: data["Timestamp"], value1: data["Value 1"], value2: data["Value 2"], value3: data["Value 3"] }
 
         }, function (data) {
@@ -75,8 +74,15 @@ class Graph {
             //console.log("data_limited stringify: " + JSON.stringify(data_limited));          
 
             // Graph axis Y
-            self.y_min_value = Math.min(...data.map(o => o.value1), ...data.map(o => o.value2), ...data.map(o => o.value3));
-            self.y_max_value = Math.max(...data.map(o => o.value1), ...data.map(o => o.value2), ...data.map(o => o.value3));
+            var y_min_v1 = Math.min(...data.map(o => o.value1));
+            var y_min_v2 = Math.min(...data.map(o => o.value2));
+            var y_min_v3 = Math.min(...data.map(o => o.value3));
+            self.y_min_value = Math.min(y_min_v1, y_min_v2, y_min_v3);
+
+            var y_max_v1 = Math.max(...data.map(o => o.value1));
+            var y_max_v2 = Math.max(...data.map(o => o.value2));
+            var y_max_v3 = Math.max(...data.map(o => o.value3));
+            self.y_max_value = Math.max(y_max_v1, y_max_v2, y_max_v3);
 
             self.y = d3.scaleLinear()
                 .domain([self.y_min_value, self.y_max_value])
@@ -146,6 +152,7 @@ class Graph {
     }
 
     update(currentTime) {
+        self = this;
         var svg = d3.selectAll("svg");
 
         this.x.domain([currentTime - 1000, (this.graph_X_max_value + (currentTime + 1000))]);
@@ -166,17 +173,12 @@ class Graph {
             .append("text")
             .attr("fill", "#000")
             .attr("fill", "red")
-            .attr("y", -5)
-            .text(function (d) { return (parseInt(currentTime, 10) + "ms"); });
-
-        //console.log("DATA: " + this.data);
-        var graph_timelapse = this.graph_timelapse;
-        var x = this.x;
-        var y = this.y;
+            .attr("y", -180)
+            .text(function (d) { return (self.millisToMinutesAndSeconds(currentTime)); });
 
         // Filter CSV data to render a limited data, based on the timestamp
         var data_limited = this.data.filter(function (item) {
-            return ((item.date <= graph_timelapse + currentTime) && (item.date > currentTime - 1000));
+            return ((item.date <= self.graph_timelapse + currentTime) && (item.date > currentTime - 1000));
         });
 
         svg.select("." + this.element_id + "_graphValue1")
@@ -190,8 +192,8 @@ class Graph {
             .duration(0)
             .ease(d3.easeLinear)
             .attr("d", d3.line()
-                .x(function (d) { return x(d.date) })
-                .y(function (d) { return y(d.value1) })
+                .x(function (d) { return self.x(d.date) })
+                .y(function (d) { return self.y(d.value1) })
             );
 
         svg.select("." + this.element_id + "_graphValue2")
@@ -204,8 +206,8 @@ class Graph {
             .delay(0)
             .duration(0)
             .attr("d", d3.line()
-                .x(function (d) { return x(d.date) })
-                .y(function (d) { return y(d.value2) })
+                .x(function (d) { return self.x(d.date) })
+                .y(function (d) { return self.y(d.value2) })
             );
 
         svg.select("." + this.element_id + "_graphValue3")
@@ -218,10 +220,20 @@ class Graph {
             .delay(0)
             .duration(0)
             .attr("d", d3.line()
-                .x(function (d) { return x(d.date) })
-                .y(function (d) { return y(d.value3) })
+                .x(function (d) { return self.x(d.date) })
+                .y(function (d) { return self.y(d.value3) })
             );
 
         this.removeUnwantedXaxisValues(svg);
+    }
+
+    millisToMinutesAndSeconds(millis) {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0);
+        return (
+            seconds == 60 ?
+            (minutes+1) + ":00" :
+            minutes + ":" + (seconds < 10 ? "0" : "") + seconds
+        );
     }
 }

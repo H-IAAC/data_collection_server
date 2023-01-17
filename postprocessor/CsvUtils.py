@@ -9,6 +9,7 @@ class CsvUtils:
     @staticmethod
     def drop_row_lower_than(file, video_start_time):
         csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
+        
         number_of_rows = len(csv.index)
         
         print(f"    total number_of_rows {number_of_rows} before drop_row_lower_than")
