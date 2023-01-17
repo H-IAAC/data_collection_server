@@ -4,7 +4,7 @@ module.exports = {
     /**
      * Get
      * 
-     * Returns a list with all 'coletas'.
+     * Returns a list with all 'experimentos'.
      */
     get: function (req, res) {
         service.get_labels().then(directories => res.json({ labels: directories }));

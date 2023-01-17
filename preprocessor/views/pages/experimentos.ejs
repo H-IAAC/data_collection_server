@@ -1,36 +1,36 @@
 <div class="center">
-    <h1>Coletas</h1>
+    <h1>Experimentos</h1>
 </div>
 <div>
-    <% for (var i=0; i < coletas.length; i++) { %>
+    <% for (var i=0; i < experimentos.length; i++) { %>
             <div class="center">
                 <div class="card">
                     <div class="card-container">
                         <h3>
                             <b>
-                                <%= coletas[i].label %>
+                                <%= experimentos[i].label %>
                             </b>
-                            <i onclick="onClickDelete('<%= coletas[i].label %>')" class="material-icons"
+                            <i onclick="onClickDelete('<%= experimentos[i].label %>')" class="material-icons"
                                 style="float: right;">delete_forever</i>
                         </h3>
                         <h4>
-                            <%= coletas[i].activity %>
+                            <%= experimentos[i].activity %>
                         </h4>
                         <p>
-                            <%= new Date(coletas[i].time).toString() %>
+                            <%= new Date(experimentos[i].time).toString() %>
                         </p>
                         <p>
-                            <a onclick="onClickCard('<%= coletas[i].label %>')" href="#">Conteúdo: <%=
-                                    coletas[i].content %>
+                            <a onclick="onClickCard('<%= experimentos[i].label %>')" href="#">Conteúdo: <%=
+                                experimentos[i].content %>
                                     arquivos</a>
                         </p>
-                        <% if (coletas[i].error > 0) { %>
+                        <% if (experimentos[i].error > 0) { %>
                             <p style="background-color:red; text-align: center;">Post Processor Error! Check the 'err.log' file.</p>
                         <% } %>
-                        <% if (coletas[i].videoAvailable === false) { %>
-                            <p><button onclick="location.href='/upload?experiment=<%= coletas[i].label %>'">Upload</button></p>
+                        <% if (experimentos[i].videoAvailable === false) { %>
+                            <p><button onclick="location.href='/upload?experiment=<%= experimentos[i].label %>'">Upload</button></p>
                         <% } else { %>
-                            <p><button onclick="onClickWatch('<%= coletas[i].label %>')">Watch</button></p>
+                            <p><button onclick="onClickWatch('<%= experimentos[i].label %>')">Watch</button></p>
                         <% } %>
                     </div>
                 </div>
@@ -46,11 +46,11 @@
 <script type="text/javascript">
 
     function onClickCard(label) {
-        window.location.href = '/coletas/download?label=' + encodeURI(label);
+        window.location.href = '/experimentos/download?label=' + encodeURI(label);
     }
 
     function onClickWatch(label) {
-        window.location.href = '/coletas/watch?label=' + encodeURI(label);
+        window.location.href = '/experimentos/watch?label=' + encodeURI(label);
     }
 
     function onClickDelete(label) {
