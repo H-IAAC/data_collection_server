@@ -1,4 +1,4 @@
-const repo = require('../repositories/ExperimentRepository');
+const repo = require('../repositories/experimentRepository');
 
 module.exports = {
     async get_experiments() {

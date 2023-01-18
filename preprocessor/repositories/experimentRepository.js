@@ -45,7 +45,7 @@ module.exports = {
 
             var preprocess_files = fs.readdirSync(pre_dir + dir_name);
 
-            var activity = 'activity';
+            var activity = '---';
             var total_number_of_files = 0;
             var isVideoAvailable = false;
 
