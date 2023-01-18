@@ -88,7 +88,7 @@ module.exports = {
                 return res.status(500).json({ status: "Error: " + err });
             }
 
-            if (!files.file || !files.file.filepath || !fields.experiment || !fields.activity) {
+            if (!files.file || !files.file.filepath || !fields.experiment || !fields.subject) {
                 logger.error("Invalid request");
                 return res.status(400).json({ status: "Request is missing required parameters (file and experiment are required)." });
             }
