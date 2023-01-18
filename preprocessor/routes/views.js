@@ -1,4 +1,4 @@
-const service = require("../services/ExperimentService");
+const service = require("../services/experimentService");
 
 const express = require('express'),
     expressLayouts = require('express-ejs-layouts')

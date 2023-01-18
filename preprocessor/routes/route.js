@@ -1,7 +1,7 @@
 const express = require('express');
 const uploadCtrl = require('../controllers/uploadCtrl');
 const timestampCtrl = require('../controllers/timestampCtrl');
-const experimentCtrl = require('../controllers/ExperimentCtrl');
+const experimentCtrl = require('../controllers/experimentCtrl');
 
 const router = express.Router();
 
