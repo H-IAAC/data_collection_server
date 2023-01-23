@@ -1,7 +1,5 @@
 import pandas
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 from pathlib import Path
 
 
@@ -9,6 +7,7 @@ class CsvUtils:
     @staticmethod
     def drop_row_lower_than(file, video_start_time):
         csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
+        
         number_of_rows = len(csv.index)
         
         print(f"    total number_of_rows {number_of_rows} before drop_row_lower_than")
@@ -89,39 +88,3 @@ class CsvUtils:
             files_created.append(csv_file)
             
         return files_created
-
-    @staticmethod
-    def plot(file, sensor, dest):
-        img_file = dest + sensor
-        print(f"Plot file {file} to {img_file}")
-
-        columns = ["Timestamp", "Value 1", "Value 2", "Value 3"]
-        df = pandas.read_csv(file, usecols=columns, sep=',', skipinitialspace=True)
-
-        fig, ax = plt.subplots()
-
-        print(f"->>> {df['Timestamp'][0]}")
-        df["Timestamp"] = df["Timestamp"] - df['Timestamp'][0]
-
-        x = df["Timestamp"].values
-        sensor_x = df["Value 1"].values
-        sensor_y = df["Value 2"].values
-        sensor_z = df["Value 3"].values
-
-        lines = plt.plot(x, sensor_x, x, sensor_y, x, sensor_z)
-
-        l1, l2, l3 = lines
-        plt.setp(l1, linewidth=1, color='r')
-        plt.setp(l2, linewidth=1, color='g')
-        plt.setp(l3, linewidth=1, color='b')
-
-        print(fig.get_figwidth())
-        fig.set_figwidth((df["Timestamp"].iloc[-1] / 1000) * 2)
-
-        plt.savefig(img_file, format="svg")
-
-        plt.close()
-        plt.cla()
-        plt.clf()
-
-        return

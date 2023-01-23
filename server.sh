@@ -10,20 +10,20 @@ TOOL_NAME='ferramenta_de_visualizacao'
 
 example() {
     echo "Development env:"
-    echo "  bash start.sh start pre port 3000"
-    echo "  bash start.sh start post"
+    echo "  bash server.sh start pre port 3000"
+    echo "  bash server.sh start post"
     echo ""
     echo "Production env:"
-    echo "  bash start.sh start prod pre"
-    echo "  bash start.sh start prod post"
+    echo "  bash server.sh start prod pre"
+    echo "  bash server.sh start prod post"
     echo ""
     echo "Stop:"
-    echo "bash start.sh stop"
+    echo "bash server.sh stop"
     echo ""
 }
 
 usage() {
-    echo "Usage: start.sh [pre/post] [prod] [port <value>] [predir <pre_processing_dir>] [postdir <post_processing_dir>]"
+    echo "Usage: server.sh [pre/post] [prod] [port <value>] [predir <pre_processing_dir>] [postdir <post_processing_dir>]"
     echo "  [pre/post]          Choose to start 'pre' processing or 'post' processing service."
     echo "  [prod]              Set to start as 'production' environment."
     echo "  [port <value>]      Set service port (eg.: 8081, 3000, ....)."

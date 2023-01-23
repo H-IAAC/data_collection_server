@@ -144,15 +144,18 @@ video {
     height: inherit;
 }
 
-/* Create two equal columns that floats next to each other */
-.column {
+.column_left {
     float: left;
-    width: 50%;
+    width: 67%;
     height: 560px;
-    /* Should be removed. Only for demonstration */
 }
 
-/* Clear floats after the columns */
+.column_right {
+    float: left;
+    width: 33%;
+    height: 560px;
+}
+
 .row {
     text-align: left;
 }

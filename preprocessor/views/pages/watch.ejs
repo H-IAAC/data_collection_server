@@ -5,7 +5,7 @@
 </style>
 
 <div class="row">
-    <div class="column" style="background-color:#aaa;">
+    <div class="column_left" style="background-color:#aaa;">
         <div class="video_container td">
             <video controls preload="auto">
                 <source src="<%= data.path %><%= data.video %>" type="video/mp4">
@@ -13,7 +13,7 @@
             </video>
         </div>
     </div>
-    <div class="column" style="background-color:#bbb;">
+    <div class="column_right" style="background-color:#bbb;">
         <div class="graph_subtitles">
             <canvas style="background-color: red;"></canvas>
             <label class="graph_subtitles_child">X (value 1)</label>
@@ -51,7 +51,7 @@
 
 <section class="bottom">
     <div class="center">
-        <button onclick="window.history.back()" class="btn">Back</button>
+        <button onclick="window.location.href = '/experimentos'" class="btn">Back</button>
     </div>
 </section>
 
@@ -59,20 +59,30 @@
 
 <script type="text/javascript">
 
-    const graph1 = new Graph("svg_graph_01");
-    const graph2 = new Graph("svg_graph_02");
+    var data_stringified = '<%- JSON.stringify(data) %>';
+    var data = JSON.parse(data_stringified);
+
+    const graph1 = new Graph("svg_graph_01", data, 1500);
+    const graph2 = new Graph("svg_graph_02", data, 1500);
 
     const video = document.querySelector('video');
     const graph_selector_01 = document.getElementById('graph_selector_01');
     const graph_selector_02 = document.getElementById('graph_selector_02');
+    const svg_graph_01 = document.getElementById('svg_graph_01');
+    const svg_graph_02 = document.getElementById('svg_graph_02');
+
+    svg_graph_01.onclick = function() {
+        let video_timestamp = prompt('Insert timestamp (' + video.currentTime + ')');
+        video.currentTime = video_timestamp;
+    };
+
+    svg_graph_02.onclick = function() {
+        let video_timestamp = prompt('Insert timestamp (' + video.currentTime + ')');
+        video.currentTime = video_timestamp;
+    };
 
     graph_selector_01.selectedIndex = -1;
     graph_selector_02.selectedIndex = -1;
-
-    var data_stringified = '<%- JSON.stringify(data) %>';
-    var data = JSON.parse(data_stringified);
-    //console.log(data);
-    //console.log(data.csv);
 
     graph_selector_01.onchange = (event) => {
         document.getElementById("svg_graph_01").replaceChildren();
@@ -85,7 +95,6 @@
     }
 
     video.ontimeupdate = (event) => {
-        //console.log(video.currentTime);
         if (typeof graph1.x !== "undefined")
             graph1.update(video.currentTime * 1000);
 

@@ -29,7 +29,7 @@ module.exports = {
      */
     async validate_csv(file_path, file_name) {
 
-        // Filename format must be "<label>_<on-body_position>__20230110.232916.csv"
+        // Filename format must be "<activity>_<on-body_position>__20230110.232916.csv"
         var name_splitted = file_name.split("_");
         var onbody_position = name_splitted[name_splitted.length - 3];
         if (onbody_position === undefined) {

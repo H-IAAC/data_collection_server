@@ -1,6 +1,8 @@
 <div class="center">
     <form action='#' onsubmit="return false;">
-        <input type="text" id="label" placeholder="Label" />
+        <input type="text" id="exp_input" placeholder="Nome do Experimento" />
+        <input type="text" id="user_input" placeholder="Usuário" />
+        <p id="upload_msg">Selecione o arquivo de video:</p>
         <br>
         <input type="file" id="file" accept=".mp4" onchange="videoSelected()" />
         <br>
@@ -18,8 +20,20 @@
 </div>
 <section class="bottom">
     <div class="center">
-        <button class="btnBack" onclick="window.history.back()" class="btn">Back</button>
+        <button class="btnBack" onclick="onBackClicked()" class="btn">Back</button>
     </div>
 </section>
 
 <script src="/upload/uploader.js"></script>
+
+<script type="text/javascript">
+
+    function onBackClicked() {
+        if (experiment) {
+            window.location.href = '/experimentos';
+        } else {
+            window.location.href = '/';
+        }
+    }
+
+</script>

@@ -1,12 +1,23 @@
 var progress;
 
-const label = document.getElementById('label');
+const exp_input = document.getElementById('exp_input');
+const user_input = document.getElementById('user_input');
 const message = document.getElementById('message');
 const progressUpload = document.getElementsByClassName("progressUpload")[0];
 const duration = document.getElementById('duration');
 const video = document.createElement('video');
+const experiment = getUrlParameter('experiment');
+const user = getUrlParameter('user');
 
 addProgressBar();
+
+if (experiment) {
+    exp_input.style.display = "none";
+}
+
+if (user) {
+    user_input.style.display = "none";
+}
 
 function videoSelected() {
     const file = document.getElementById('file').files[0];
@@ -27,11 +38,17 @@ function videoSelected() {
     video.src = URL.createObjectURL(file);
 }
 
+function getUrlParameter(param) {
+    var queryString = window.location.search;
+    var urlParams = new URLSearchParams(queryString);
+    return urlParams.get(param);
+}
+
 function upload() {
     const file = document.getElementById('file').files[0];
 
-    if (!file || label.value == "") {
-        message.innerText = 'Inserir Label e Arquivo.';
+    if (!file || ((!experiment) && (exp_input.value == "")) || ((!user) && (user_input.value == ""))) {
+        message.innerText = 'Verifique os dados de entrada.';
         return;
     }
 
@@ -45,7 +62,8 @@ function upload() {
     req.open("POST", "/api/video", true);
 
     form.append("file", file);
-    form.append("label", label.value);
+    form.append("experiment", (experiment) ? experiment : exp_input.value);
+    form.append("subject", (user) ? user : user_input.value);
     form.append("timestamp", timestamp);
     form.append("videoduration", video.duration);
     form.append("overwrite", false);

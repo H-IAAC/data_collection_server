@@ -3,7 +3,7 @@ const fs = require('fs'),
     path = require('path'),
     logger = require('../utils/logger'),
     utils = require('../utils/utils'),
-    service = require("../services/LabelService");;
+    service = require("../services/experimentService");;
 
 const MAX_FILE_SIZE = 2000 * 1024 * 1024; // 2Gb
 
@@ -24,9 +24,9 @@ module.exports = {
                 return res.status(500).json({ status: "Error: " + err });
             }
 
-            if (!files.file || !files.file.filepath || !fields.label || !fields.overwrite || !fields.timestamp) {
+            if (!files.file || !files.file.filepath || !fields.experiment || !fields.overwrite || !fields.timestamp || !fields.subject) {
                 logger.error("Invalid request");
-                return res.status(400).json({ status: "Request is missing data (file, label, overwrite and timestamp are required)." });
+                return res.status(400).json({ status: "Request is missing data (file, experiment, overwrite and timestamp are required)." });
             }
 
             if (files.file.filepath.split('.').pop() !== 'mp4') {
@@ -34,9 +34,9 @@ module.exports = {
                 return res.status(400).json({ status: "Invalid video file extension." });
             }
 
-            logger.info("Receiving video: " + files.file.originalFilename + " label: " + fields.label);
+            logger.info("Receiving video: " + files.file.originalFilename + " experiment: " + fields.experiment + " user: " + fields.subject);
 
-            var uploadLocation_dir = service.create_label(fields.label);
+            var uploadLocation_dir = service.create_experiment(fields.experiment + ' [' + fields.subject + ']');
             var uploadLocationVideoFile = uploadLocation_dir + files.file.originalFilename;
             var uploadLocationVideoMeta = uploadLocation_dir + path.parse(files.file.originalFilename).name + ".video";
 
@@ -44,16 +44,16 @@ module.exports = {
             // Need to fail if a file with same file name already exists
             if ((fields.overwrite && fields.overwrite === 'false') && fs.existsSync(uploadLocationVideoFile)) {
                 logger.info("Ignoring file " + uploadLocationVideoFile + " as it already exists.");
-                return res.status(500).json({ status: "Upload ignored. A file with this label and name already exists." });
+                return res.status(500).json({ status: "Upload ignored. A file with this experiment and name already exists." });
             }
 
-            // Need to check if this label has no video, each label must have only 1 video.
+            // Need to check if this experiment has no video, each experiment must have only 1 video.
             // so get all content from this
-            var uploadLocation_files = await service.get_directory_content(uploadLocation_dir, fields.label);
+            var uploadLocation_files = await service.get_directory_content(uploadLocation_dir, fields.experiment);
             for (let file of uploadLocation_files) {
                 if (file.isVideo === true) {
-                    logger.info("Ignoring file " + files.file.originalFilename + ", label " + fields.label + " already has a video.");
-                    return res.status(500).json({ status: "Upload ignored. A video already exists for this label." });
+                    logger.info("Ignoring file " + files.file.originalFilename + ", experiment " + fields.experiment + " already has a video.");
+                    return res.status(500).json({ status: "Upload ignored. A video already exists for this experiment." });
                 }
             }
 
@@ -66,7 +66,7 @@ module.exports = {
 
             fs.writeFileSync(uploadLocationVideoMeta, createVideoMetadata(files.file.originalFilename, fields));
 
-            logger.info("video: " + files.file.originalFilename + " label: " + fields.label + " [success]");
+            logger.info("video: " + files.file.originalFilename + " experiment: " + fields.experiment +  " user: " + fields.subject + " [success]");
 
             return res.json({ status: "Success" });
         });
@@ -88,29 +88,29 @@ module.exports = {
                 return res.status(500).json({ status: "Error: " + err });
             }
 
-            if (!files.file || !files.file.filepath || !fields.label) {
+            if (!files.file || !files.file.filepath || !fields.experiment || !fields.subject) {
                 logger.error("Invalid request");
-                return res.status(400).json({ status: "Request is missing required parameters (file and label are required)." });
+                return res.status(400).json({ status: "Request is missing required parameters (file and experiment are required)." });
             }
 
             if (!fields.overwrite) {
                 fields.overwrite = 'false';
             }
 
-            logger.info("Receiving file: " + files.file.originalFilename + " label: " + fields.label);
+            logger.info("Receiving file: " + files.file.originalFilename + " experiment: " + fields.experiment + " user: " + fields.subject);
 
             // Uploads are sent to operating systems tmp dir by default,
             // need to copy correct destination.
             var tmpPath = files.file.filepath;
 
-            var uploadLocation_dir = service.create_label(fields.label);
+            var uploadLocation_dir = service.create_experiment(fields.experiment + ' [' + fields.subject + ']');
 
             uploadLocation = uploadLocation_dir + files.file.originalFilename;
 
             // If a file with same file name already exists, then return an error and not overwrite the file.
             if (fields.overwrite === 'false' && fs.existsSync(uploadLocation)) {
                 logger.info("Ignoring file " + uploadLocation + " as it already exists in the " + uploadLocation + " directory.");
-                return res.status(500).json({ status: "Upload ignored. A file with label and name already exists." });
+                return res.status(500).json({ status: "Upload ignored. A file with experiment and name already exists." });
             }
 
             if (await utils.validate_csv(tmpPath, files.file.originalFilename) !== "success") {
@@ -130,7 +130,7 @@ module.exports = {
 
             fs.writeFileSync(uploadLocation, rawData);
 
-            logger.info("Receiving file: " + files.file.originalFilename + " label: " + fields.label + " [success]");
+            logger.info("Receiving file: " + files.file.originalFilename + " experiment: " + fields.experiment  + " user: " + fields.subject + " [success]");
 
             return res.json({ status: "Success" });
         });
@@ -139,7 +139,7 @@ module.exports = {
 
 function createVideoMetadata(filename, values) {
     return '[Metadata]' + '\n' +
-        'label = ' + values.label + '\n' +
+        'experiment = ' + values.experiment + '\n' +
         'filename = ' + filename + '\n' +
         'videoDuration = ' + values.videoduration + '\n' +
         'startTimestamp = ' + (Date.parse(values.timestamp) - (Math.floor(values.videoduration * 1000))) + '\n' +
