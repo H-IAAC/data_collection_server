@@ -1,18 +1,22 @@
 var progress;
 
 const exp_input = document.getElementById('exp_input');
-const upload_msg = document.getElementById('upload_msg');
+const user_input = document.getElementById('user_input');
 const message = document.getElementById('message');
 const progressUpload = document.getElementsByClassName("progressUpload")[0];
 const duration = document.getElementById('duration');
 const video = document.createElement('video');
-const experiment = getUrlParameter();
+const experiment = getUrlParameter('experiment');
+const user = getUrlParameter('user');
 
 addProgressBar();
 
 if (experiment) {
     exp_input.style.display = "none";
-    upload_msg.style.display = "block";
+}
+
+if (user) {
+    user_input.style.display = "none";
 }
 
 function videoSelected() {
@@ -34,17 +38,17 @@ function videoSelected() {
     video.src = URL.createObjectURL(file);
 }
 
-function getUrlParameter() {
+function getUrlParameter(param) {
     var queryString = window.location.search;
     var urlParams = new URLSearchParams(queryString);
-    return urlParams.get('experiment');
+    return urlParams.get(param);
 }
 
 function upload() {
     const file = document.getElementById('file').files[0];
 
-    if (!file || ((!experiment) && (exp_input.value == "") )) {
-        message.innerText = 'Inserir Nome do Experimento e o Arquivo.';
+    if (!file || ((!experiment) && (exp_input.value == "")) || ((!user) && (user_input.value == ""))) {
+        message.innerText = 'Verifique os dados de entrada.';
         return;
     }
 
@@ -59,6 +63,7 @@ function upload() {
 
     form.append("file", file);
     form.append("experiment", (experiment) ? experiment : exp_input.value);
+    form.append("subject", (user) ? user : user_input.value);
     form.append("timestamp", timestamp);
     form.append("videoduration", video.duration);
     form.append("overwrite", false);

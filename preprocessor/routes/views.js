@@ -7,7 +7,10 @@ const router = express.Router();
 router.use(expressLayouts);
 
 /* HOME Page */
-router.route('/').get(function (req, res) { res.render("pages/home", {}); });
+router.route('/').get(function (req, res) {
+    service.get_experiments().then(exps =>
+        res.render("pages/experimentos", { experimentos: exps }));
+});
 
 /* Upload Page */
 router.route('/upload').get(function (req, res) { res.render("pages/upload", {}); });

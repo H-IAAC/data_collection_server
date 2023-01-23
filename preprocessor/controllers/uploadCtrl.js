@@ -24,7 +24,7 @@ module.exports = {
                 return res.status(500).json({ status: "Error: " + err });
             }
 
-            if (!files.file || !files.file.filepath || !fields.experiment || !fields.overwrite || !fields.timestamp) {
+            if (!files.file || !files.file.filepath || !fields.experiment || !fields.overwrite || !fields.timestamp || !fields.subject) {
                 logger.error("Invalid request");
                 return res.status(400).json({ status: "Request is missing data (file, experiment, overwrite and timestamp are required)." });
             }
@@ -34,9 +34,9 @@ module.exports = {
                 return res.status(400).json({ status: "Invalid video file extension." });
             }
 
-            logger.info("Receiving video: " + files.file.originalFilename + " experiment: " + fields.experiment);
+            logger.info("Receiving video: " + files.file.originalFilename + " experiment: " + fields.experiment + " user: " + fields.subject);
 
-            var uploadLocation_dir = service.create_experiment(fields.experiment);
+            var uploadLocation_dir = service.create_experiment(fields.experiment + ' [' + fields.subject + ']');
             var uploadLocationVideoFile = uploadLocation_dir + files.file.originalFilename;
             var uploadLocationVideoMeta = uploadLocation_dir + path.parse(files.file.originalFilename).name + ".video";
 
@@ -66,7 +66,7 @@ module.exports = {
 
             fs.writeFileSync(uploadLocationVideoMeta, createVideoMetadata(files.file.originalFilename, fields));
 
-            logger.info("video: " + files.file.originalFilename + " experiment: " + fields.experiment + " [success]");
+            logger.info("video: " + files.file.originalFilename + " experiment: " + fields.experiment +  " user: " + fields.subject + " [success]");
 
             return res.json({ status: "Success" });
         });
@@ -97,13 +97,13 @@ module.exports = {
                 fields.overwrite = 'false';
             }
 
-            logger.info("Receiving file: " + files.file.originalFilename + " experiment: " + fields.experiment);
+            logger.info("Receiving file: " + files.file.originalFilename + " experiment: " + fields.experiment + " user: " + fields.subject);
 
             // Uploads are sent to operating systems tmp dir by default,
             // need to copy correct destination.
             var tmpPath = files.file.filepath;
 
-            var uploadLocation_dir = service.create_experiment(fields.experiment);
+            var uploadLocation_dir = service.create_experiment(fields.experiment + ' [' + fields.subject + ']');
 
             uploadLocation = uploadLocation_dir + files.file.originalFilename;
 
@@ -130,7 +130,7 @@ module.exports = {
 
             fs.writeFileSync(uploadLocation, rawData);
 
-            logger.info("Receiving file: " + files.file.originalFilename + " experiment: " + fields.experiment + " [success]");
+            logger.info("Receiving file: " + files.file.originalFilename + " experiment: " + fields.experiment  + " user: " + fields.subject + " [success]");
 
             return res.json({ status: "Success" });
         });

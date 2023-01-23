@@ -8,9 +8,9 @@
                     <div class="card-container">
                         <h3>
                             <b>
-                                <%= experimentos[i].experiment %>
+                                <%= experimentos[i].directory %>
                             </b>
-                            <i onclick="onClickDelete('<%= experimentos[i].experiment %>')" class="material-icons"
+                            <i onclick="onClickDelete('<%= experimentos[i].directory %>')" class="material-icons"
                                 style="float: right;">delete_forever</i>
                         </h3>
                         <h4>
@@ -20,7 +20,7 @@
                             <%= new Date(experimentos[i].time).toString() %>
                         </p>
                         <p>
-                            <a onclick="onClickCard('<%= experimentos[i].experiment %>')" href="#">Conteúdo: <%=
+                            <a onclick="onClickFiles('<%= experimentos[i].directory %>')" href="#">Conteúdo: <%=
                                 experimentos[i].content %>
                                     arquivos</a>
                         </p>
@@ -28,9 +28,9 @@
                             <p style="background-color:red; text-align: center;">Post Processor Error! Check the 'err.log' file.</p>
                         <% } %>
                         <% if (experimentos[i].videoAvailable === false) { %>
-                            <p><button onclick="location.href='/upload?experiment=<%= experimentos[i].experiment %>'">Upload</button></p>
+                            <p><button onclick="onClickUpload('<%= experimentos[i].experiment %>','<%= experimentos[i].user %>')">Upload</button></p>
                         <% } else { %>
-                            <p><button onclick="onClickWatch('<%= experimentos[i].experiment %>')">Watch</button></p>
+                            <p><button onclick="onClickWatch('<%= experimentos[i].directory %>')">Watch</button></p>
                         <% } %>
                     </div>
                 </div>
@@ -38,23 +38,26 @@
             <% } %>
 </div>
 <section class="bottom">
-    <div class="center">
-        <button onclick="window.history.back()" class="btn">Back</button>
-    </div>
+
 </section>
 
 <script type="text/javascript">
 
-    function onClickCard(experiment) {
-        window.location.href = '/experimentos/download?experiment=' + encodeURI(experiment);
+    function onClickFiles(directory) {
+        console.log(directory);
+        window.location.href = encodeURI('/experimentos/download?experiment=' + directory);
     }
 
-    function onClickWatch(experiment) {
-        window.location.href = '/experimentos/watch?experiment=' + encodeURI(experiment);
+    function onClickUpload(experiment, user) {
+        window.location.href = encodeURI('/upload/?experiment=' + experiment + '&user=' + user);
     }
 
-    function onClickDelete(experiment) {
-        let text = "Remover arquivos relacionados ao " + experiment + "?";
+    function onClickWatch(directory) {
+        window.location.href = encodeURI('/experimentos/watch?experiment=' + directory);
+    }
+
+    function onClickDelete(directory) {
+        let text = "Remover arquivos relacionados ao " + directory + "?";
         if (confirm(text) == true) {
             alert('TODO');
         }

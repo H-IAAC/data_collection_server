@@ -68,6 +68,18 @@
     const video = document.querySelector('video');
     const graph_selector_01 = document.getElementById('graph_selector_01');
     const graph_selector_02 = document.getElementById('graph_selector_02');
+    const svg_graph_01 = document.getElementById('svg_graph_01');
+    const svg_graph_02 = document.getElementById('svg_graph_02');
+
+    svg_graph_01.onclick = function() {
+        let video_timestamp = prompt('Insert timestamp (' + video.currentTime + ')');
+        video.currentTime = video_timestamp;
+    };
+
+    svg_graph_02.onclick = function() {
+        let video_timestamp = prompt('Insert timestamp (' + video.currentTime + ')');
+        video.currentTime = video_timestamp;
+    };
 
     graph_selector_01.selectedIndex = -1;
     graph_selector_02.selectedIndex = -1;

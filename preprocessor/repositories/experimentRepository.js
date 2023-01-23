@@ -45,17 +45,24 @@ module.exports = {
 
             var preprocess_files = fs.readdirSync(pre_dir + dir_name);
 
+            var experiment = 'Experiment';
             var activity = '---';
+            var user = 'user'
             var total_number_of_files = 0;
             var isVideoAvailable = false;
+
+            // Extract experiment and user from directory name
+            // directory name example: '<experiment> [<user>]'
+            experiment = dir_name.substring(0, dir_name.lastIndexOf(" ["));
+            user = dir_name.substring(dir_name.indexOf("[") + 1, dir_name.lastIndexOf("]"));
 
             preprocess_files.filter(file => {
                 total_number_of_files++;
 
                 if (path.extname(file).toLowerCase() === '.csv') {
                     // Get activity string from file name.
-                    // Filename example: Server_Test5_Braço__20230112.154454
-                    activity = file.substring(0, file.indexOf('__'));
+                    // Filename example: <user>_<activity>_<device_location>__20230112.154454.csv
+                    activity = file.substring(file.indexOf('_') + 1, file.indexOf('__'));
                     activity = activity.substring(0, activity.lastIndexOf('_'));
 
                 } else if (path.extname(file).toLowerCase() === '.video') {
@@ -68,7 +75,9 @@ module.exports = {
             })
 
             return {
-                experiment: dir_name,
+                directory: dir_name,
+                experiment: experiment,
+                user: user,
                 activity: activity,
                 time: fs.statSync(pre_dir + dir_name).mtime.getTime(),
                 content: total_number_of_files,
