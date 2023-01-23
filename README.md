@@ -7,8 +7,8 @@
 ## Installation:
 ### Pre processor:
 1) Check system requirements:
-> node v18.12.1
-npm 8.19.2
+- node v18.12.1
+- npm 8.19.2
 
 2) Go to preprocessor directory:
 > cd preprocessor/
@@ -18,8 +18,8 @@ npm 8.19.2
 
 ### Post processor:
 1) Check system requirements:
-> Python 3.8.10
-pip 22.3.1
+- Python 3.8.10
+- pip 22.3.1
 
 2) Go to postprocessor directory:
 > cd postprocessor/
@@ -31,12 +31,12 @@ pip 22.3.1
   Use the server.sh script to execute the preprocessor and postprocessor tools,
 
 &nbsp;&nbsp;**Development env:**
-> &nbsp; bash start.sh start pre port 3000
-> &nbsp; bash start.sh start post
+`     bash start.sh start pre port 3000`
+`     bash start.sh start post`
 
 &nbsp;&nbsp;**Production env:**
-> start:
-> &nbsp; bash start.sh start prod pre
-> &nbsp; bash start.sh start prod post
-> stop:
-> &nbsp; bash start.sh stop
+start:
+`     bash server.sh start prod pre`
+`     bash server.sh start prod post`
+stop:
+`     bash server.sh stop`
