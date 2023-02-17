@@ -69,8 +69,8 @@ class ProcessFile:
                 return
             
             csv_files = CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
-        except:
-            Logger.log_error(postprocessor_directory, f"{self.filename} invalid file format.");
+        except Exception as e:
+            Logger.log_error(postprocessor_directory, f"Something went wrong with file [{self.filename}]. {e}");
             
         if not csv_files:
             print(f"    {self.filename} ignoring this file")

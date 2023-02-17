@@ -2,7 +2,8 @@ const fs = require('fs'),
     logger = require('../utils/logger'),
     { parse } = require("csv-parse"),
     readLastLines = require('read-last-lines'),
-    path = require('path');
+    path = require('path'),
+    os = require('os');
 
 module.exports = {
     /**
@@ -102,5 +103,57 @@ module.exports = {
             };
         });
         return value;
+    },
+
+    extract_activity_from_filename(file_name) {
+        var activity = file_name.substring(file_name.indexOf('_') + 1, file_name.indexOf('__'));
+        activity = activity.substring(0, activity.lastIndexOf('_'));
+
+        return activity;
+    },
+
+    extract_experiment_from_directory(directory) {
+        // Extract experiment and user from directory name
+        // directory name example: '<experiment> [<user>]'
+        return directory.substring(0, directory.indexOf(" ["));
+    },
+
+    extract_user_from_directory(directory) {
+        // Extract experiment and user from directory name
+        // directory name example: '<experiment> [<user>]'
+        return directory.substring(directory.lastIndexOf(" [") + 2, directory.lastIndexOf("]"));
+    },
+
+    extract_activity_from_directory(directory) {
+        return directory.substring(directory.indexOf(" [") + 2, directory.indexOf("] "));
+    },
+
+    number_of_csv_files_in_directory(directory) {
+
+        let count = 0;
+        var files = fs.readdirSync(directory);        
+
+        files.forEach(file => {
+            if (file.toLowerCase().includes('.csv'))
+                count++;
+        });
+
+        return count;
+    },
+
+    get_directory_video(directory) {
+
+        let ret = 'none';
+
+        if (!fs.existsSync(directory)) return ret;
+
+        var files = fs.readdirSync(directory);        
+
+        files.forEach(file => {
+            if (file.toLowerCase().includes('.mp4'))
+                ret = file;
+        });
+
+        return ret;
     }
 }

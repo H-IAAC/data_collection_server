@@ -7,27 +7,52 @@ module.exports = {
     /**
      * Create a new experiment.
      * 
-     * @param {type} name           Experiment name.
-     * @return {type}               Return the experiment directory path.
+     * @param {type} experiment         Experiment name.
+     * @param {type} activity           Activity name.
+     * @param {type} user               User name.
+     * @return {type}                   Return directory path.
      */
-    create_experiment(name) {
-        var experiment_dir = consts.PREPROCESSING_DIR + name + path.sep;
+    create_experiment(experiment, activity, user) {
+        var dir = consts.PREPROCESSING_DIR + experiment + ' [' + activity + '] [' + user + ']' + path.sep;        
 
-        utils.create_directory(experiment_dir);
+        utils.create_directory(dir);
 
-        return experiment_dir;
+        return dir;
     },
 
     /**
      * Check if a experiment exists.
      * 
-     * @param {type} name           Experiment name.
-     * @return {type}               True if experiment exists, otherwise return false.
+     * @param {type} directory           Experiment directory.
+     * @return {type}                   True if experiment exists, otherwise return false.
      */
-    experiment_exists(name) {
-        var experiment_dir = consts.PREPROCESSING_DIR + name + path.sep;
+    experiment_exists(directory) {
+        var experiment_dir = consts.PREPROCESSING_DIR + directory + path.sep;
 
         return fs.existsSync(experiment_dir);
+    },
+
+    /**
+     * Check if a directory has a video.
+     * 
+     * @param {type} directory      Directory name.
+     * @return {type}               True if has video, otherwise return false.
+     */
+     experiment_has_video(directory) {
+        var ret = false;
+        var experiment_dir = consts.PREPROCESSING_DIR + directory + path.sep;
+
+        if (!fs.existsSync(experiment_dir))
+            return ret;
+
+        var files = fs.readdirSync(experiment_dir);
+
+        files.forEach(file => {
+            if (file.toLowerCase().includes('.mp4'))
+                ret = true;
+        });
+
+        return ret;
     },
 
     /**
@@ -53,19 +78,14 @@ module.exports = {
 
             // Extract experiment and user from directory name
             // directory name example: '<experiment> [<user>]'
-            experiment = dir_name.substring(0, dir_name.lastIndexOf(" ["));
-            user = dir_name.substring(dir_name.indexOf("[") + 1, dir_name.lastIndexOf("]"));
+            experiment = utils.extract_experiment_from_directory(dir_name);
+            user = utils.extract_user_from_directory(dir_name);
+            activity = utils.extract_activity_from_directory(dir_name);
 
             preprocess_files.filter(file => {
                 total_number_of_files++;
 
-                if (path.extname(file).toLowerCase() === '.csv') {
-                    // Get activity string from file name.
-                    // Filename example: <user>_<activity>_<device_location>__20230112.154454.csv
-                    activity = file.substring(file.indexOf('_') + 1, file.indexOf('__'));
-                    activity = activity.substring(0, activity.lastIndexOf('_'));
-
-                } else if (path.extname(file).toLowerCase() === '.video') {
+                if (path.extname(file).toLowerCase() === '.video') {
                     // Do not count '.video' as a file, because it is not
                     // uploaded by user.
                     total_number_of_files--;
@@ -160,6 +180,82 @@ module.exports = {
 
         jsonData.csv = csv_files;
         jsonData.path = path.sep + name + path.sep;
+
+        return jsonData;
+    },
+
+    /**
+     * Get a list os experiments.
+     */
+    async list_all_experiments() {
+        var pre_dir = consts.PREPROCESSING_DIR;
+        var post_dir = consts.POSTPROCESSING_DIR;
+
+        let directories = await fs.promises.readdir(pre_dir);        
+
+        return directories.map(function (dir_name) {
+            
+            return {
+                experiment: utils.extract_experiment_from_directory(dir_name),
+                user: utils.extract_user_from_directory(dir_name),
+                activity: utils.extract_activity_from_directory(dir_name),
+                csv_count: utils.number_of_csv_files_in_directory(pre_dir + dir_name) + utils.number_of_csv_files_in_directory(post_dir + dir_name),
+                video: utils.get_directory_video(pre_dir + dir_name)
+            }
+        }).map(function (v) {
+            return v;
+        });
+    },
+
+    /**
+     * Get files from pre and post processor directory.
+     */
+    async list_experiment_files(query) {
+        var pre_dir = consts.PREPROCESSING_DIR + path.sep;
+        pre_dir += query.experiment + " [" + query.activity + "] [" + query.user + "]";
+
+        var pos_dir = consts.POSTPROCESSING_DIR + path.sep;
+        pos_dir += query.experiment + " [" + query.activity + "] [" + query.user + "]";
+
+        var jsonData = {};
+        var content = [];
+
+        if (!fs.existsSync(pre_dir)) {
+            return content;
+        }
+
+        // Get files from pre processing directory
+        let files = await fs.promises.readdir(pre_dir);
+        files.forEach(function (file) {
+            if (path.extname(file).toLowerCase() !== '.video')
+                content.push(file);
+        });
+
+        // Get files from post processing directory
+        files = await fs.promises.readdir(pos_dir);
+        files.forEach(function (file) {
+            // Do not return mp4 from post processor directory, as it is already been returned with the
+            // pre processor content.
+            if (path.extname(file).toLowerCase() !== '.video' && path.extname(file).toLowerCase() !== '.mp4')
+                content.push(file);
+        });
+
+        jsonData.files = content;
+
+        return jsonData;
+    },
+
+    /**
+     * Get the video filename, as video file name follow the original name uploaded by the user,
+     * this method is used to discover the file name of an experiment.
+     */
+    async get_video_filename(query) {
+        var pre_dir = consts.PREPROCESSING_DIR + path.sep;
+        pre_dir += query.experiment + " [" + query.activity + "] [" + query.user + "]";
+
+        var jsonData = {};
+
+        jsonData.video = utils.get_directory_video(pre_dir);
 
         return jsonData;
     }

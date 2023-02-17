@@ -21,7 +21,11 @@ module.exports = {
         return repo.experiment_exists(experiment_name);
     },
 
-    create_experiment(experiment_name) {
-        return repo.create_experiment(experiment_name);
+    create_experiment(experiment, activity, user) {
+        return repo.create_experiment(experiment, activity, user);
+    },
+
+    experiment_has_video(directory) {
+        return repo.experiment_has_video(directory);
     }
 }

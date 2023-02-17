@@ -8,7 +8,7 @@
                     <div class="card-container">
                         <h3>
                             <b>
-                                <%= experimentos[i].directory %>
+                                <%= experimentos[i].experiment %> [<%= experimentos[i].user %>]
                             </b>
                             <i onclick="onClickDelete('<%= experimentos[i].directory %>')" class="material-icons"
                                 style="float: right;">delete_forever</i>
@@ -28,7 +28,7 @@
                             <p style="background-color:red; text-align: center;">Post Processor Error! Check the 'err.log' file.</p>
                         <% } %>
                         <% if (experimentos[i].videoAvailable === false) { %>
-                            <p><button onclick="onClickUpload('<%= experimentos[i].experiment %>','<%= experimentos[i].user %>')">Upload</button></p>
+                            <p><button onclick="onClickUpload('<%= experimentos[i].directory %>')">Upload</button></p>
                         <% } else { %>
                             <p><button onclick="onClickWatch('<%= experimentos[i].directory %>')">Watch</button></p>
                         <% } %>
@@ -48,8 +48,8 @@
         window.location.href = encodeURI('/experimentos/download?experiment=' + directory);
     }
 
-    function onClickUpload(experiment, user) {
-        window.location.href = encodeURI('/upload/?experiment=' + experiment + '&user=' + user);
+    function onClickUpload(directory) {
+        window.location.href = encodeURI('/upload/?directory=' + directory);
     }
 
     function onClickWatch(directory) {

@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import argparse
 from ProcessFile import ProcessFile
 from watchdog.observers import Observer
@@ -18,6 +19,14 @@ class FileCreateHandler(FileSystemEventHandler):
             return
 
         print(f"*- {event.src_path} detected")
+
+        # Check file historical size to make sure that file
+        # is not been copied.
+        historicalSize = -1
+        while (historicalSize != os.path.getsize(event.src_path)):
+            historicalSize = os.path.getsize(event.src_path)
+            time.sleep(2)
+
         process = ProcessFile(event.src_path, self.postprocessor_path)
         process.check_event()
         print(f"*-- {event.src_path} process completed")
