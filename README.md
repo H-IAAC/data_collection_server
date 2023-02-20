@@ -31,8 +31,8 @@
   Use the server.sh script to execute the preprocessor and postprocessor tools,
 
 &nbsp;&nbsp;**Development env:**
-`     bash start.sh start pre port 3000`
-`     bash start.sh start post`
+`     bash server.sh start pre port 3000`
+`     bash server.sh start post`
 
 &nbsp;&nbsp;**Production env:**
 start:

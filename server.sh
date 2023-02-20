@@ -97,11 +97,11 @@ start() {
         if [ ! -z $PRE_SERVICE  ]
         then
             echo "  Starting pre-processing service..."
-            nohup node ./preprocessor/server.js $PORT $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1 &
+            nohup node ./preprocessor/server.js $PORT $PRE_DIR $POST_DIR $TOOL_NAME >> log_pre.out 2>&1 &
         elif [ ! -z $POST_SERVICE ] 
         then
             echo "  Starting post-processing service..."
-            nohup python3 ./postprocessor/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1 &
+            nohup python3 ./postprocessor/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> log_post.out 2>&1 &
         else
             echo ""
             echo "  Invalid command! Missing [pre/post] argument."
