@@ -24,32 +24,35 @@ class ProcessFile:
             print(f"Create new directory:  {postprocessor_directory}")
             os.makedirs(postprocessor_directory)
 
-        # Check what action to take based on file extesion
-        if self.extension == '.csv'.lower():
-            print(f"{self.filename} processing csv file")
-            has_video = self.has_video_files(postprocessor_directory)
-            
-            if not has_video:
-                self.handle_csv_when_no_video(postprocessor_directory)
+        try:
+            # Check what action to take based on file extesion
+            if self.extension == '.csv'.lower():
+                print(f"{self.filename} processing csv file")
+                has_video = self.has_video_files(postprocessor_directory)
+
+                if not has_video:
+                    self.handle_csv_when_no_video(postprocessor_directory)
+                    return
+
+                self.handle_csv(self.fullpath, postprocessor_directory, f"{postprocessor_directory}{has_video}")
+
+            elif self.extension == '.video'.lower():
+                print(f"{self.filename} processing video file")
+                self.handle_video(postprocessor_directory)
                 return
-            
-            self.handle_csv(self.fullpath, postprocessor_directory, f"{postprocessor_directory}{has_video}")
 
-        elif self.extension == '.video'.lower():
-            print(f"{self.filename} processing video file")
-            self.handle_video(postprocessor_directory)
-            return
-
-        else:
-            print("No action for file " + self.filename + self.extension)
-            return
+            else:
+                print("No action for file " + self.filename + self.extension)
+                return
+        except Exception as e:
+            Logger.log_error(postprocessor_directory, f"Failed when processing: [{self.filename}]. {e}");
 
     def handle_csv_when_no_video(self, postprocessor_directory):
         # Without the video we cant process the file, as we dont have timestamps values
         # Need to create a copy in 'waiting' directory
         waiting_dir = f"{postprocessor_directory}waiting"
         waiting_file = f"{waiting_dir}{os.sep}{Path(self.fullpath).name}"
-        
+
         os.makedirs(waiting_dir, exist_ok=True)            
         shutil.copyfile(self.fullpath, waiting_file)
         
@@ -71,13 +74,6 @@ class ProcessFile:
             csv_files = CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
         except Exception as e:
             Logger.log_error(postprocessor_directory, f"Something went wrong with file [{self.filename}]. {e}");
-            
-        if not csv_files:
-            print(f"    {self.filename} ignoring this file")
-            Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! Check filename.");
-
-        #for file in csv_files:
-        #    CsvUtils.plot(file, Path(file).stem, postprocessor_directory)
             
     def handle_video(self, postprocessor_directory):
         # Get copy of .video to postprocessor directory
@@ -121,11 +117,10 @@ class ProcessFile:
         config.read(video_file, encoding="cp1251")
 
         # read values from a section
-        videoDuration = config.get('Metadata', 'videoDuration')
         startTimestamp = config.get('Metadata', 'startTimestamp')
         endTimestamp = config.get('Metadata', 'endTimestamp')
         
-        return dict(videoDuration = videoDuration, startTimestamp = startTimestamp, endTimestamp = endTimestamp)
+        return dict(startTimestamp = startTimestamp, endTimestamp = endTimestamp)
 
 
 

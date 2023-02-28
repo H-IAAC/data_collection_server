@@ -61,6 +61,9 @@ class CsvUtils:
             # Drop unused columns
             csv_sensor = csv_sensor.drop(csv_sensor.columns[[0, 1, 2, 3]], axis=1)
             
+            #duplicate 'Timestamp' column
+            csv_sensor.insert(loc=0, column='VideoTimelapse', value=csv_sensor['Timestamp'])
+
             # Drop duplicated rows
             csv_sensor = csv_sensor.drop_duplicates(keep='first')
 
@@ -68,17 +71,17 @@ class CsvUtils:
             # the timestamp according to the video start time.
             # So video start time, refers to csv timestamp = 0.
             # But there are 2 possible situations:
-            if (video_start_time < csv_sensor.iloc[0]['Timestamp']):
+            if (video_start_time < csv_sensor.iloc[0]['VideoTimelapse']):
                 # 1) Video start before the csv timestamp. In this scenario the csv rows are updated
                 # the have the difference between csv date and video start date.
-                csv_sensor['Timestamp'] = csv_sensor['Timestamp'] - video_start_time            
+                csv_sensor['VideoTimelapse'] = csv_sensor['VideoTimelapse'] - video_start_time
             else:
                 # 2) Video starts after csv data. In this scenario, csv row match the video start time.
                 # We just need to remove the difference between csv first row and the others, so first
                 # will be zero.
                 # Note, it is possible because 'drop_row_lower_than' and 'drop_row_bigger_than' methods
                 # have been previously executed.
-                csv_sensor['Timestamp'] = csv_sensor['Timestamp'] - csv_sensor.iloc[0]['Timestamp']
+                csv_sensor['VideoTimelapse'] = csv_sensor['VideoTimelapse'] - csv_sensor.iloc[0]['VideoTimelapse']
 
             # Save rows to a new csv file.
             csv_file = dest + sensor + '_' + on_body_positions + '.csv'
