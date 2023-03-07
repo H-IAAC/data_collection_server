@@ -26,11 +26,25 @@ module.exports = {
      * @param {type} directory           Experiment directory.
      * @return {type}                   True if experiment exists, otherwise return false.
      */
-    experiment_exists(directory) {
+    experiment_directory_exists(directory) {
         var experiment_dir = consts.PREPROCESSING_DIR + directory + path.sep;
 
         return fs.existsSync(experiment_dir);
     },
+
+    /**
+     * Check if a experiment exists.
+     * 
+     * @param {type} experiment         Experiment name.
+     * @param {type} activity           Activity name.
+     * @param {type} user               User name.
+     * @return {type}                   True if experiment exists, otherwise return false.
+     */
+    experiment_exists(experiment, activity, user) {
+        var dir = consts.PREPROCESSING_DIR + experiment + ' [' + activity + '] [' + user + ']' + path.sep;
+
+        return fs.existsSync(dir);
+    },    
 
     /**
      * Check if a directory has a video.

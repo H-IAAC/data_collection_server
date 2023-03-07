@@ -18,6 +18,7 @@ const app = express();
 const args = process.argv.slice(2);
 
 if (args[0] && args[1] && args[2]) {
+    console.log("args[0]: " + args[0])
     serverPort = args[0];
     consts.PREPROCESSING_DIR = args[1];
     consts.POSTPROCESSING_DIR = args[2];

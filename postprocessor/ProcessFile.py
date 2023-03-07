@@ -64,16 +64,16 @@ class ProcessFile:
         try:
             # Remove rows before and after the video timestamps
             if not CsvUtils.drop_row_lower_than(csv_fullpath, int(metadata['startTimestamp'])):
-                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check timestamp after drop rows lower than initial timestamp");
+                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows lower than initial timestamp");
                 return
                 
             if not CsvUtils.drop_row_bigger_than(csv_fullpath, int(metadata['endTimestamp'])):
-                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check timestamp after drop rows bigger than initial timestamp");
+                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows bigger than initial timestamp");
                 return
             
             csv_files = CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
         except Exception as e:
-            Logger.log_error(postprocessor_directory, f"Something went wrong with file [{self.filename}]. {e}");
+            Logger.log_error(postprocessor_directory, f"Something went wrong with file [{self.filename}] and {csv_fullpath}. {e}");
             
     def handle_video(self, postprocessor_directory):
         # Get copy of .video to postprocessor directory

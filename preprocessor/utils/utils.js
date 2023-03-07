@@ -56,55 +56,6 @@ module.exports = {
         })
     },
 
-    /**
-     * Get the timestamp from the last row in a csv file.
-     * 
-     * @param {type} file_path   Path to the csv file.
-     */
-    async get_csv_last_timestamps(csv_file) {
-        return readLastLines.read(csv_file, 1)
-            .then((line) => {
-                return line.split(";")[4].replaceAll('"', '');
-            });
-    },
-
-    /**
-     * Convert a ini file to json object.
-     * 
-     * @param {type} file_path   Path to the ini file.
-     */
-    convert_ini_to_json(file_path) {
-        var ini_data = fs.readFileSync(file_path, 'utf8');
-
-        var regex = {
-            section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
-            param: /^\s*([^=]+?)\s*=\s*(.*?)\s*$/,
-            comment: /^\s*;.*$/
-        };
-        var value = {};
-        var lines = ini_data.split(/[\r\n]+/);
-        var section = null;
-        lines.forEach(function (line) {
-            if (regex.comment.test(line)) {
-                return;
-            } else if (regex.param.test(line)) {
-                var match = line.match(regex.param);
-                if (section) {
-                    value[section][match[1]] = match[2];
-                } else {
-                    value[match[1]] = match[2];
-                }
-            } else if (regex.section.test(line)) {
-                var match = line.match(regex.section);
-                value[match[1]] = {};
-                section = match[1];
-            } else if (line.length == 0 && section) {
-                section = null;
-            };
-        });
-        return value;
-    },
-
     extract_activity_from_filename(file_name) {
         var activity = file_name.substring(file_name.indexOf('_') + 1, file_name.indexOf('__'));
         activity = activity.substring(0, activity.lastIndexOf('_'));

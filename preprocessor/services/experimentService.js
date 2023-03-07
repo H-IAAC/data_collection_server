@@ -17,8 +17,12 @@ module.exports = {
         return repo.get_directory_content(dir_path, experiment_name);
     },
 
-    experiment_exists(experiment_name) {
-        return repo.experiment_exists(experiment_name);
+    experiment_directory_exists(directory_name) {
+        return repo.experiment_directory_exists(directory_name);
+    },
+
+    experiment_exists(experiment, activity, user) {
+        return repo.experiment_exists(experiment, activity, user);
     },
 
     create_experiment(experiment, activity, user) {

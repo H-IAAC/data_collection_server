@@ -11,6 +11,7 @@ router.route('/video').post(uploadCtrl.video);
 router.route('/file').post(uploadCtrl.file);
 router.route('/experiments').get(experimentCtrl.get);
 router.route('/experiments').post(experimentCtrl.create);
+router.route('/experiment_exists').post(experimentCtrl.exists);
 
 /* Python client library */
 router.route('/list_all_experiments').get(clientCtrl.list_experiments);

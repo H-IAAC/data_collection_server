@@ -4,9 +4,9 @@ const fs = require('fs'),
     logger = require('../utils/logger'),
     consts = require('../utils/consts'),
     utils = require('../utils/utils'),
-    service = require("../services/experimentService");;
+    service = require("../services/experimentService");
 
-const MAX_FILE_SIZE = 2000 * 1024 * 1024; // 2Gb
+const MAX_FILE_SIZE = 4000 * 1024 * 1024; // 4Gb
 
 module.exports = {
     /**
@@ -43,7 +43,7 @@ module.exports = {
             var metadata_destionation_path = upload_dir + path.parse(files.file.originalFilename).name + ".video";
 
             // Check if experiment really exists
-            if (!service.experiment_exists(fields.directory)) {
+            if (!service.experiment_directory_exists(fields.directory)) {
                 logger.info("Invalid upload directory: " + fields.directory);
                 return res.status(409).json({ status: "Invalid upload directory." });
             }

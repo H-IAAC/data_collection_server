@@ -11,7 +11,7 @@ class CsvUtils:
         number_of_rows = len(csv.index)
         
         print(f"    total number_of_rows {number_of_rows} before drop_row_lower_than")
-        print(f"    first row timestamp value is {csv.iloc[0]['Timestamp']}, \n         and drop_row_lower_than {video_start_time}")
+        print(f"    timestamp FIRST ROW: {csv.iloc[0]['Timestamp']}, \n deleting row lower than {video_start_time}")
         csv.drop(csv[csv["Timestamp"] < video_start_time].index, inplace=True)
         number_of_rows = len(csv.index)
         print(f"    total number_of_rows: {number_of_rows} after drop_row_lower_than")
@@ -28,7 +28,7 @@ class CsvUtils:
         number_of_rows = len(csv.index)
         
         print(f"    total number_of_rows: {number_of_rows} before drop_row_bigger_than")      
-        print(f"    last row timestamp value is {csv.iloc[-1]['Timestamp']}, \n       and drop_row_bigger_than {video_end_time}")
+        print(f"    timestamp LAST ROW: {csv.iloc[-1]['Timestamp']}, \n  deleting bigger than {video_end_time}")
         csv.drop(csv[csv["Timestamp"] > video_end_time].index, inplace=True)
         number_of_rows = len(csv.index)
         print(f"    total number_of_rows: {number_of_rows} after drop_row_bigger_than") 
@@ -82,6 +82,8 @@ class CsvUtils:
                 # Note, it is possible because 'drop_row_lower_than' and 'drop_row_bigger_than' methods
                 # have been previously executed.
                 csv_sensor['VideoTimelapse'] = csv_sensor['VideoTimelapse'] - csv_sensor.iloc[0]['VideoTimelapse']
+                
+            csv_sensor = csv_sensor.sort_values(by=['VideoTimelapse'])
 
             # Save rows to a new csv file.
             csv_file = dest + sensor + '_' + on_body_positions + '.csv'
