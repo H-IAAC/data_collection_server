@@ -128,6 +128,78 @@ module.exports = {
 
             return res.json({ status: "Success" });
         });
+    },
+
+    /**
+     * POST
+     * 
+     * Upload config.
+     */
+    config: function (req, res) {
+        const form = new formidable.IncomingForm({ keepExtensions: true, maxFileSize: MAX_FILE_SIZE });
+
+        // Parse form content
+        form.parse(req, async function (err, fields, files) {
+
+            if (err) {
+                logger.error("error: " + err);
+                return res.status(500).json({ status: "Error: " + err });
+            }
+
+            if (!files.file || !files.file.filepath || !fields.experiment || !fields.subject || !fields.activity) {
+                logger.error("Invalid request");
+                return res.status(400).json({ status: "Request is missing required parameters (file and experiment are required)." });
+            }
+
+            logger.info("Receiving config: " + files.file.originalFilename + 
+                        " for experiment: [" + fields.experiment +
+                        "] user: [" + fields.subject +
+                        "] activity: [" + fields.activity + "]");
+
+            // Uploads are sent to operating systems tmp dir by default,
+            // need to copy correct destination.
+            var tmp_path = files.file.filepath;
+
+            var upload_dir = service.create_experiment(fields.experiment, fields.activity, fields.subject);
+            var file_destination_path = upload_dir + files.file.originalFilename;
+
+            // Get file content on tmp dir.
+            var raw_data = fs.readFileSync(tmp_path);
+
+            fs.writeFileSync(file_destination_path, raw_data);
+
+            logger.info("Receiving config: " + files.file.originalFilename + 
+                        " for experiment: [" + fields.experiment +
+                        "] user: [" + fields.subject +
+                        "] activity: [" + fields.activity + "] [success]");
+
+            return res.json({ status: "Success" });
+        });
+    },
+
+    /**
+     * GET
+     * 
+     * Return config.
+     */
+    getConfig: function (req, res) {
+
+        if (!req.query.experiment || !req.query.subject || !req.query.activity) {
+            logger.error("Invalid request");
+            return res.status(400).json({ status: "Request is missing required parameter." });
+        }
+
+        const experiment = req.query.experiment;
+        const subject = req.query.subject;
+        const activity = req.query.activity;
+
+        logger.info("Checking config for experiment: [" + experiment + "] user: [" + subject + "] activity: [" + activity + "]");
+
+        var config = service.get_experiment_config(experiment, activity, subject);
+
+        logger.info("Returning config: [" + config + "]");
+
+        return res.send(config);
     }
 }
 

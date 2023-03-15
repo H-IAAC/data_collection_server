@@ -5,6 +5,20 @@ const fs = require('fs'),
 
 module.exports = {
     /**
+     * Get experiment config.
+     * 
+     * @param {type} experiment         Experiment name.
+     * @param {type} activity           Activity name.
+     * @param {type} user               User name.
+     * @return {type}                   Return a JSON file, if any.
+     */
+    get_experiment_config(experiment, activity, user) {
+        var dir = consts.PREPROCESSING_DIR + experiment + ' [' + activity + '] [' + user + ']' + path.sep;        
+
+        return utils.get_config(dir);;
+    },
+
+    /**
      * Create a new experiment.
      * 
      * @param {type} experiment         Experiment name.

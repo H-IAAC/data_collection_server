@@ -106,5 +106,22 @@ module.exports = {
         });
 
         return ret;
+    },
+
+    get_config(directory) {
+
+        var content = '{}';
+
+        if (!fs.existsSync(directory)) return content;
+
+        var files = fs.readdirSync(directory);        
+
+        files.forEach(file => {
+            if (file.toLowerCase().includes('.json')) {
+                content = fs.readFileSync(directory + path.sep + file);
+            }
+        });
+
+        return content;
     }
 }

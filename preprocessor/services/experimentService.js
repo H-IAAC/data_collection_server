@@ -29,6 +29,10 @@ module.exports = {
         return repo.create_experiment(experiment, activity, user);
     },
 
+    get_experiment_config(experiment, activity, user) {
+        return repo.get_experiment_config(experiment, activity, user);
+    },
+
     experiment_has_video(directory) {
         return repo.experiment_has_video(directory);
     }
