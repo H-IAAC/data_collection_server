@@ -74,15 +74,9 @@ class Graph {
             //console.log("data_limited stringify: " + JSON.stringify(data_limited));          
 
             // Graph axis Y
-            var y_min_v1 = Math.min(...data.map(o => o.value1));
-            var y_min_v2 = Math.min(...data.map(o => o.value2));
-            var y_min_v3 = Math.min(...data.map(o => o.value3));
-            self.y_min_value = Math.min(y_min_v1, y_min_v2, y_min_v3);
-
-            var y_max_v1 = Math.max(...data.map(o => o.value1));
-            var y_max_v2 = Math.max(...data.map(o => o.value2));
-            var y_max_v3 = Math.max(...data.map(o => o.value3));
-            self.y_max_value = Math.max(y_max_v1, y_max_v2, y_max_v3);
+            var min_max = self.getMinMax(data);
+            self.y_min_value = min_max[0];
+            self.y_max_value = min_max[1];
 
             self.y = d3.scaleLinear()
                 .domain([self.y_min_value, self.y_max_value])
@@ -140,6 +134,20 @@ class Graph {
                 self.update(currentTime);
         });
 
+    }
+
+
+
+    getMinMax(data) {
+        var minValue1 = data.reduce((min, p) => Math.min(p.value1, min), data[0].value1);
+        var minValue2 = data.reduce((min, p) => Math.min(p.value2, min), data[0].value2);
+        var minValue3 = data.reduce((min, p) => Math.min(p.value3, min), data[0].value3);
+
+        var maxValue1 = data.reduce((max, p) => Math.max(p.value1, max), data[0].value1);
+        var maxValue2 = data.reduce((max, p) => Math.max(p.value2, max), data[0].value2);
+        var maxValue3 = data.reduce((max, p) => Math.max(p.value3, max), data[0].value3);
+
+         return [Math.min(minValue1, minValue2, minValue3), Math.max(maxValue1, maxValue2, maxValue3)];
     }
 
     removeUnwantedXaxisValues(svg) {
