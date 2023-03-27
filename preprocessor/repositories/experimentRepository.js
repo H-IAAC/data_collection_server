@@ -15,7 +15,7 @@ module.exports = {
     get_experiment_config(experiment, activity, user) {
         var dir = consts.PREPROCESSING_DIR + experiment + ' [' + activity + '] [' + user + ']' + path.sep;        
 
-        return utils.get_config(dir);;
+        return utils.get_template(dir);;
     },
 
     /**
@@ -207,7 +207,7 @@ module.exports = {
         });
 
         jsonData.csv = csv_files;
-        jsonData.path = path.sep + name + path.sep;
+        jsonData.path = consts.POSTPROCESSING_STATIC + path.sep + name + path.sep;
 
         return jsonData;
     },

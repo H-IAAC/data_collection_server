@@ -1,11 +1,26 @@
 const fs = require('fs'),
     logger = require('../utils/logger'),
+    consts = require('../utils/consts'),
     { parse } = require("csv-parse"),
     readLastLines = require('read-last-lines'),
     path = require('path'),
     os = require('os');
 
 module.exports = {
+    /**
+     * @return {json}           Return content from ./config/config.json
+     */
+    get_config: function () {
+
+        if (fs.existsSync(consts.CONFIG_FILE_PATH)) {
+            let rawdata = fs.readFileSync(consts.CONFIG_FILE_PATH);
+            return JSON.parse(rawdata);
+        }
+
+        logger.error("ERROR! Missing config file: " + consts.CONFIG_FILE_PATH);
+        return {};
+    },
+
     /**
      * @param {type} dir_path   Path from the directory to be created.
      * @return {type}           Return true if directory created, false if fails or already exists.
@@ -81,8 +96,10 @@ module.exports = {
 
     number_of_csv_files_in_directory(directory) {
 
+        if (!fs.existsSync(directory)) return 0;
+
         let count = 0;
-        var files = fs.readdirSync(directory);        
+        var files = fs.readdirSync(directory);
 
         files.forEach(file => {
             if (file.toLowerCase().includes('.csv'))
@@ -108,7 +125,7 @@ module.exports = {
         return ret;
     },
 
-    get_config(directory) {
+    get_template(directory) {
 
         var content = '{}';
 

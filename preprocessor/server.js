@@ -7,7 +7,10 @@ const express = require('express'),
     consts = require('./utils/consts'),
     bodyParser = require('body-parser'),
     path = require('path'),
-    favicon = require('serve-favicon');
+    favicon = require('serve-favicon'),
+    multer = require("multer"),
+    cookieParser = require("cookie-parser"),
+    auth = require('./services/authenticationService.js');
 
 var serverPort = 3000;
 
@@ -32,15 +35,29 @@ if (args[0] && args[1] && args[2]) {
 }
 
 app.use(bodyParser.json());
+app.use(multer().array());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use('/api', routes);
 app.use('/', views);
 
+// Static Files, check auth to allow access to pre and post static directories
+app.use(function(req, res, next) {
+    if (!req.url.indexOf(consts.PREPROCESSING_STATIC) ||
+        !req.url.indexOf(consts.POSTPROCESSING_STATIC)) {
+        if (!auth.jwt_verify(req.cookies, req.originalUrl))
+            return res.send(401);
+    }
+    next();
+});
+
 // Static Files
-app.use(express.static(path.join(__dirname + path.sep + 'public')));
-app.use(express.static(path.join(__dirname + path.sep + path.basename(consts.PREPROCESSING_DIR))));
-app.use(express.static(path.join(__dirname + path.sep + path.basename(consts.POSTPROCESSING_DIR))));
+app.use('/static', express.static(path.join(__dirname + path.sep + 'public')));
+app.use(consts.PREPROCESSING_STATIC, express.static(path.join(__dirname + path.sep + path.basename(consts.PREPROCESSING_DIR))));
+app.use(consts.POSTPROCESSING_STATIC, express.static(path.join(__dirname + path.sep + path.basename(consts.POSTPROCESSING_DIR))));
+
+// Set favicon
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 
 // Set views directory path
@@ -59,4 +76,3 @@ app.listen(serverPort, function () {
     logger.info("  preprocessor_path: " + consts.PREPROCESSING_DIR);
     logger.info("  postprocessor_path: " + consts.POSTPROCESSING_DIR);
 });
-

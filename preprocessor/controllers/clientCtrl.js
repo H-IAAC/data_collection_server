@@ -1,5 +1,5 @@
-const service = require("../services/clientService");;
-const converter = require('json-2-csv')
+const service = require("../services/clientService");
+const converter = require('json-2-csv');
 
 module.exports = {
     /**
