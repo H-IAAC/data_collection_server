@@ -4,7 +4,7 @@
         <div>
             <!--Don't show files with .video extension--> 
             <% if (files.pre[i].name.substr(files.pre[i].name.length - 5) !== 'video') { %>
-                <a href="<%= files.pre[i].path %>"><%= files.pre[i].name%></a>
+                <a href="pre<%= files.pre[i].path %>"><%= files.pre[i].name%></a>
             <% } %>
         </div>
         <% } %>
@@ -16,7 +16,7 @@
         <div>
             <!--Don't show files with .video extension--> 
             <% if ((files.post[i].name.substr(files.post[i].name.length - 5) !== 'video') && (files.post[i].name !== 'waiting')) { %>
-                <a href="<%= files.post[i].path %>"><%= files.post[i].name%></a>
+                <a href="pos<%= files.post[i].path %>"><%= files.post[i].name%></a>
             <% } %>
         </div>
         <% } %>
@@ -27,11 +27,3 @@
         <button onclick="window.history.back()">Back</button>
     </div>
 </section>
-
-<script type="text/javascript">
-
-    function onClickCard(experiment) {
-        window.location.href = '/experimentos/files?experiment=' + encodeURI(experiment);
-    }
-
-</script>

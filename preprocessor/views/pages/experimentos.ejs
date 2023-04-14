@@ -3,6 +3,8 @@
 </div>
 <div>
     <% for (var i=0; i < experimentos.length; i++) { %>
+        <% console.log(experimentos[i].content) %>
+        <% if (experimentos[i].content !== 0) { %>
             <div class="center">
                 <div class="card">
                     <div class="card-container">
@@ -35,7 +37,8 @@
                     </div>
                 </div>
             </div>
-            <% } %>
+        <% } %>
+    <% } %>
 </div>
 <section class="bottom">
 
@@ -44,8 +47,7 @@
 <script type="text/javascript">
 
     function onClickFiles(directory) {
-        console.log(directory);
-        window.location.href = encodeURI('/experimentos/download?experiment=' + directory);
+        window.location.href = encodeURI('/download?experiment=' + directory);
     }
 
     function onClickUpload(directory) {

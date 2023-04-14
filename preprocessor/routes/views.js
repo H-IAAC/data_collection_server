@@ -1,7 +1,8 @@
-const service = require("../services/experimentService");
-const auth = require('../services/authenticationService.js');
-const express = require('express'),
-      expressLayouts = require('express-ejs-layouts')
+const service = require("../services/experimentService"),
+      auth = require('../services/authenticationService'),
+      multer = require("multer"),
+      express = require('express'),
+      expressLayouts = require('express-ejs-layouts');
 
 const router = express.Router();
 router.use(expressLayouts);
@@ -36,7 +37,7 @@ router.route('/experimentos').get(async (req, res) => {
 });
 
 /* Download Page */
-router.route('/experimentos/download').get(async (req, res) => {
+router.route('/download').get(async (req, res) => {
     if (!auth.jwt_verify(req.cookies, req.originalUrl))
         return res.render("pages/login", {});
 
@@ -58,16 +59,15 @@ router.route('/experimentos/watch').get(async (req, res) => {
 });
 
 /* SignIn API */
-router.route('/in').post(async (req, res) => {
+router.route('/in').post(multer().array(), async (req, res) => {
     const pass = await auth.check_passwd(req.body.password);
-
     if (pass) {
         res.cookie("JWT", auth.jwt_sign());
         res.status(200);
         res.send("OK");
     } else {
         res.status(200);
-        res.send("Invalid user/password");
+        res.send("Invalid password");
     }
 
 });

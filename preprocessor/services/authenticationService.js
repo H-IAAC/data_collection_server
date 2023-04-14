@@ -43,10 +43,18 @@ module.exports = {
         }
         
         try {
-            let decoded = jwt.verify(cookies.JWT, config.jwtKey);
+            jwt.verify(cookies.JWT, config.jwtKey);
             return true;
         } catch (err) {
             logger.error("Error when authenticating access to: " + url);
+            if (err instanceof jwt.JsonWebTokenError) {
+                logger.error("JsonWebTokenError exception: " + err);
+            } else if (err instanceof jwt.TokenExpiredError) {
+                logger.error("TokenExpiredError exception: " + err);
+            } else {
+                logger.error("jwt_verify exception: " + err);
+            }
+
             return false;
         }
     }

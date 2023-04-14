@@ -4,11 +4,11 @@ const express = require('express'),
     views = require('./routes/views'),
     logger = require('./utils/logger'),
     utils = require('./utils/utils'),
+    processMonitor = require('./utils/processMonitor'),
     consts = require('./utils/consts'),
     bodyParser = require('body-parser'),
     path = require('path'),
     favicon = require('serve-favicon'),
-    multer = require("multer"),
     cookieParser = require("cookie-parser"),
     auth = require('./services/authenticationService.js');
 
@@ -35,7 +35,6 @@ if (args[0] && args[1] && args[2]) {
 }
 
 app.use(bodyParser.json());
-app.use(multer().array());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -72,7 +71,9 @@ app.set('view engine', 'ejs');
 app.listen(serverPort, function () {
     console.log("--- H-IAAC - Viewer Tool ---");
     logger.info("server is running on port " + serverPort);
-
+    logger.info("server PID " + process.pid);
     logger.info("  preprocessor_path: " + consts.PREPROCESSING_DIR);
     logger.info("  postprocessor_path: " + consts.POSTPROCESSING_DIR);
 });
+
+processMonitor.monitor_exit();

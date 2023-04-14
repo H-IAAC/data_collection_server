@@ -103,6 +103,7 @@ module.exports = {
             var user = 'user'
             var total_number_of_files = 0;
             var isVideoAvailable = false;
+            var config = false;
 
             // Extract experiment and user from directory name
             // directory name example: '<experiment> [<user>]'
@@ -111,14 +112,14 @@ module.exports = {
             activity = utils.extract_activity_from_directory(dir_name);
 
             preprocess_files.filter(file => {
-                total_number_of_files++;
-
                 if (path.extname(file).toLowerCase() === '.video') {
-                    // Do not count '.video' as a file, because it is not
-                    // uploaded by user.
-                    total_number_of_files--;
                 } else if (path.extname(file).toLowerCase() === '.mp4') {
+                    total_number_of_files++;
                     isVideoAvailable = true;
+                } else if (path.extname(file).toLowerCase() === '.json') {
+                    config = true;
+                } else if (path.extname(file).toLowerCase() === '.csv') {
+                    total_number_of_files++;
                 }
             })
 
@@ -131,7 +132,8 @@ module.exports = {
                 content: total_number_of_files,
                 videoAvailable: isVideoAvailable,
                 error: (fs.existsSync(post_dir + dir_name)) ?
-                    fs.readdirSync(post_dir + dir_name).filter(file => { return file.includes('err.log'); }).length : 0
+                    fs.readdirSync(post_dir + dir_name).filter(file => { return file.includes('err.log'); }).length : 0,
+                configAvailable: config
             }
         })
             .sort(function (a, b) {
