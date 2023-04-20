@@ -93,7 +93,7 @@ module.exports = {
                 return res.status(500).json({ status: "Error: " + err });
             }
 
-            if (!files.file || !files.file.filepath || !fields.experiment || !fields.subject) {
+            if (!files.file || !files.file.filepath || !fields.experiment || !fields.subject || !fields.activity) {
                 logger.error("Invalid request");
                 return res.status(400).json({ status: "Request is missing required parameters (file and experiment are required)." });
             }
@@ -109,9 +109,7 @@ module.exports = {
             // need to copy correct destination.
             var tmp_path = files.file.filepath;
 
-            var activity = utils.extract_activity_from_filename(files.file.originalFilename);
-
-            var upload_dir = service.create_experiment(fields.experiment, activity, fields.subject);
+            var upload_dir = service.create_experiment(fields.experiment, fields.activity, fields.subject);
             var file_destination_path = upload_dir + files.file.originalFilename;
 
             if (await utils.validate_csv(tmp_path, files.file.originalFilename) !== "success") {

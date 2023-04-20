@@ -71,13 +71,6 @@ module.exports = {
         })
     },
 
-    extract_activity_from_filename(file_name) {
-        var activity = file_name.substring(file_name.indexOf('_') + 1, file_name.indexOf('__'));
-        activity = activity.substring(0, activity.lastIndexOf('_'));
-
-        return activity;
-    },
-
     extract_experiment_from_directory(directory) {
         // Extract experiment and user from directory name
         // directory name example: '<experiment> [<user>]'
