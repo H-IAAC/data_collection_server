@@ -241,6 +241,8 @@ module.exports = {
      * Get files from pre and post processor directory.
      */
     async list_experiment_files(query) {
+        var only_post = false;
+
         var pre_dir = consts.PREPROCESSING_DIR + path.sep;
         pre_dir += query.experiment + " [" + query.activity + "] [" + query.user + "]";
 
@@ -250,16 +252,21 @@ module.exports = {
         var jsonData = {};
         var content = [];
 
+        if (query.only_post_processor && query.only_post_processor.toLowerCase() == 'true')
+            only_post = true;
+
         if (!fs.existsSync(pre_dir)) {
             return content;
         }
 
         // Get files from pre processing directory
-        let files = await fs.promises.readdir(pre_dir);
-        files.forEach(function (file) {
-            if (path.extname(file).toLowerCase() !== '.video')
-                content.push(file);
-        });
+        if (only_post == false) {
+            let files = await fs.promises.readdir(pre_dir);
+            files.forEach(function (file) {
+                if (path.extname(file).toLowerCase() !== '.video' && path.extname(file).toLowerCase() !== '.json')
+                    content.push(file);
+            });
+        }
 
         // Get files from post processing directory
         files = await fs.promises.readdir(pos_dir);
