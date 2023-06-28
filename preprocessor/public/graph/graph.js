@@ -39,8 +39,11 @@ class Graph {
                 "translate(" + margin.left + "," + margin.top + ")");
 
         d3.csv(self.graph_data.path + csv_file, function (data) {
-            return { date: data["VideoTimelapse"], value1: data["Value 1"], value2: data["Value 2"], value3: data["Value 3"] }
-
+            return { date: data["VideoTimelapse"],
+                     value1: (isNaN(data["Value 1"])) ? 0 : data["Value 1"],
+                     value2: (isNaN(data["Value 2"])) ? 0 : data["Value 2"],
+                     value3: (isNaN(data["Value 3"])) ? 0 : data["Value 3"]
+                    }
         }, function (data) {
             self.data = data;
 
