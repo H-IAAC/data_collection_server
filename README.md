@@ -30,13 +30,21 @@
 ## Service execution:
   Use the server.sh script to execute the preprocessor and postprocessor tools,
 
-&nbsp;&nbsp;**Development env:**
-`     bash server.sh start pre port 3000`
-`     bash server.sh start post`
+&nbsp;&nbsp;**Development env:**\
+&emsp;&emsp;`bash server.sh start pre port 3000`\
+&emsp;&emsp;`bash server.sh start post`
 
-&nbsp;&nbsp;**Production env:**
-start:
-`     bash server.sh start prod pre`
-`     bash server.sh start prod post`
-stop:
-`     bash server.sh stop`
+&nbsp;&nbsp;**Production env:**\
+&ensp;start:\
+&emsp;&emsp;`bash server.sh start prod pre`\
+&emsp;&emsp;`bash server.sh start prod post`\
+&ensp;stop:\
+&emsp;&emsp;`bash server.sh stop`
+
+## Overview:
+![image](https://github.com/H-IAAC/viewer_tool/assets/117912051/1f22038c-1ac9-4baf-b62f-24199b02e7e5)
+
+## Workflow:
+![image](https://github.com/H-IAAC/viewer_tool/assets/117912051/8c9757e7-24d1-45ee-981a-bb88e9c57bed)
+
+
