@@ -21,10 +21,9 @@ const app = express();
 const args = process.argv.slice(2);
 
 if (args[0] && args[1] && args[2]) {
-    console.log("args[0]: " + args[0])
     serverPort = args[0];
-    consts.PREPROCESSING_DIR = args[1];
-    consts.POSTPROCESSING_DIR = args[2];
+    consts.PREPROCESSING_DIR = path.join(__dirname + path.sep + args[1]);
+    consts.POSTPROCESSING_DIR = path.join(__dirname + path.sep + args[2]);
 
     utils.create_directory(consts.PREPROCESSING_DIR);
 } else {
@@ -53,6 +52,10 @@ app.use(function(req, res, next) {
 
 // Static Files
 app.use('/static', express.static(path.join(__dirname + path.sep + 'public')));
+
+logger.info('Defining path: ' + path.join(__dirname + path.sep + path.basename(consts.PREPROCESSING_DIR)) + ' as ' + consts.PREPROCESSING_STATIC);
+logger.info('Defining path: ' + path.join(__dirname + path.sep + path.basename(consts.POSTPROCESSING_DIR)) + ' as ' + consts.POSTPROCESSING_STATIC);
+
 app.use(consts.PREPROCESSING_STATIC, express.static(path.join(__dirname + path.sep + path.basename(consts.PREPROCESSING_DIR))));
 app.use(consts.POSTPROCESSING_STATIC, express.static(path.join(__dirname + path.sep + path.basename(consts.POSTPROCESSING_DIR))));
 

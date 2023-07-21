@@ -12,6 +12,8 @@ module.exports = {
      */
     get_config: function () {
 
+        logger.info("Config file: " + consts.CONFIG_FILE_PATH);
+
         if (fs.existsSync(consts.CONFIG_FILE_PATH)) {
             let rawdata = fs.readFileSync(consts.CONFIG_FILE_PATH);
             return JSON.parse(rawdata);

@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import pathlib
 import argparse
 from ProcessFile import ProcessFile
 from watchdog.observers import Observer
@@ -41,8 +42,8 @@ if __name__ == "__main__":
     parser.add_argument("ferramenta_de_visualizacao", help="Not used, but necessary!")
 
     args = parser.parse_args()
-    preprocessor_path = args.preprocessor
-    postprocessor_path = args.postprocessor
+    preprocessor_path = f"{pathlib.Path(__file__).parent.resolve()}{os.sep}{args.preprocessor}"
+    postprocessor_path = f"{pathlib.Path(__file__).parent.resolve()}{os.sep}{args.postprocessor}"
     
     print(f"Running:")
     print(f"  preprocessor_path: {preprocessor_path}")
