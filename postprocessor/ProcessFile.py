@@ -20,7 +20,7 @@ class ProcessFile:
 
     def check_event(self):
         # Create new directory based on 'experiment' value
-        postprocessor_directory = f".{os.sep}{self.postprocessor_path}{os.sep}{self.experiment}{os.sep}"
+        postprocessor_directory = f"{os.sep}{self.postprocessor_path}{os.sep}{self.experiment}{os.sep}"
         if not os.path.exists(postprocessor_directory):
             print(f"Create new directory:  {postprocessor_directory}")
             os.makedirs(postprocessor_directory)
