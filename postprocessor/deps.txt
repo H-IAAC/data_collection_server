@@ -1,4 +1,0 @@
- 
-pip install ffmpegcv
-pip install mediapipe
-pip install face_recognition

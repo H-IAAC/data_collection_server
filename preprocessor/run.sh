@@ -23,7 +23,21 @@ start () {
     if [ $# -eq 2 ]
     then
         echo ' Using PORT:' $2
-        nohup node $SCRIPTPATH/server.js $2 $PRE_DIR $POST_DIR $TOOL_NAME >> log_pre.out 2>&1 &
+        nohup node $SCRIPTPATH/server.js $2 $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1 &
+    else
+        echo ' ERROR! Missing PORT configuration.'
+        echo ' Please set the port argument'
+        help
+        exit 1
+    fi
+}
+
+start2 () {
+    echo 'Starting'
+    if [ $# -eq 2 ]
+    then
+        echo ' Using PORT:' $2
+        node $SCRIPTPATH/server.js $2 $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1
     else
         echo ' ERROR! Missing PORT configuration.'
         echo ' Please set the port argument'
@@ -48,6 +62,7 @@ help () {
 case $1 in
     status) status ;;
     start) start $@ ;;
+    start2) start2 $@ ;;
     stop) stop ;;
     *) help ;;
 esac

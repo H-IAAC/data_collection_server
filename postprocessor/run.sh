@@ -20,7 +20,12 @@ status () {
 
 start () {
     echo 'Starting'
-    nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> log_post.out 2>&1 &
+    nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1 &
+}
+
+start2 () {
+    echo 'Starting'
+    python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1
 }
 
 stop () {
@@ -39,6 +44,7 @@ help () {
 case $1 in
     status) status ;;
     start) start ;;
+    start2) start2 ;;
     stop) stop ;;
     isrunning) status ;;
     *) help ;;
