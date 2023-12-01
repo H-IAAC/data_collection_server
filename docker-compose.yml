@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  server:
+    image: hiaactools/viewer-tool
+    ports:
+      - 8080:8080
+    volumes:
+      - ./files/pre:/pre_dataset
+      - ./files/post:/post_datase
+
+  jupyter:
+    image: hiaactools/viewer-tool-jupyter
+    ports:
+      - 8888:8888
+      - 8050:8050
+      - 8997:8997
