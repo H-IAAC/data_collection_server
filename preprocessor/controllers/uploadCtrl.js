@@ -25,9 +25,9 @@ module.exports = {
                 return res.status(500).json({ status: "Error: " + err });
             }
 
-            if (!files.file || !files.file.filepath || !fields.directory || !fields.timestamp) {
+            if (!files.file || !files.file.filepath || !fields.directory) {
                 logger.error("Invalid request");
-                return res.status(400).json({ status: "Request is missing data (file, directory and timestamp are required)." });
+                return res.status(400).json({ status: "Request is missing required data." });
             }
 
             if (path.parse(files.file.originalFilename).ext.toLocaleLowerCase() !== '.mp4') {
@@ -205,6 +205,7 @@ function createVideoMetadata(filename, values) {
     return '[Metadata]' + '\n' +
         'experiment = ' + values.directory + '\n' +
         'filename = ' + filename + '\n' +
-        'startTimestamp = ' + (Date.parse(values.timestamp) - (Math.floor(values.videoduration * 1000))) + '\n' +
-        'endTimestamp = ' + Date.parse(values.timestamp);
+        'duration = ' + values.videoduration + '\n' +
+        'startTimestamp = ' + values.startTimestamp + '\n' +
+        'endTimestamp = ' + values.endTimestamp;
 }

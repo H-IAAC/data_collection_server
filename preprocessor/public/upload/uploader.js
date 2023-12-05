@@ -40,20 +40,24 @@ function getUrlParameter(param) {
 function upload() {
     const file = document.getElementById('file').files[0];
 
-    const timestamp = getFileModifiedTimestamp(file);
-
     resetProgressBar();
     var form = new FormData();
     var req = new XMLHttpRequest();
 
+    let endTimestamp = getFileModifiedTimestamp(file);
+
     req.upload.addEventListener("progress", updateProgress);
     req.open("POST", "/api/video", true);
-
+    form.append("experiment", (directory) ? directory : "");
     form.append("file", file);
-    form.append("directory", (directory) ? directory : "");
-    form.append("timestamp", timestamp);
-    form.append("videoduration", video.duration);
+    form.append("duration", video.duration);
+    form.append("startTimestamp", (Date.parse(endTimestamp) - (Math.floor(video.duration * 1000))));
+    form.append("endTimestamp", Date.parse(endTimestamp));
     form.append("overwrite", false);
+
+    console.log('duration: ' + video.duration);
+    console.log('startTimestamp: ' + (Date.parse(endTimestamp) - (Math.floor(video.duration * 1000))));
+    console.log('endTimestamp: ' + Date.parse(endTimestamp));
 
     req.onreadystatechange = function () {
         if (req.readyState === 4) {
