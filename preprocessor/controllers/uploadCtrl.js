@@ -44,8 +44,7 @@ module.exports = {
 
             // Check if experiment really exists
             if (!service.experiment_directory_exists(fields.directory)) {
-                logger.info("Invalid upload directory: " + fields.directory);
-                return res.status(409).json({ status: "Invalid upload directory." });
+                var upload_dir = service.create_experiment_path(upload_dir);
             }
 
             // Check if this experiment has a video available

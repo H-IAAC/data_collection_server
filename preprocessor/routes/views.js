@@ -1,5 +1,6 @@
 const service = require("../services/experimentService"),
       auth = require('../services/authenticationService'),
+      logger = require('../utils/logger'),
       multer = require("multer"),
       express = require('express'),
       expressLayouts = require('express-ejs-layouts');
@@ -13,7 +14,7 @@ router.route('/login').get(function (req, res) { res.render("pages/login", {}); 
 /* HOME Page */
 router.route('/').get(function (req, res) {
     if (!auth.jwt_verify(req.cookies, req.originalUrl))
-        return res.render("pages/login", {});
+        return res.redirect("/login");
 
     service.get_experiments().then(exps =>
         res.render("pages/experimentos", { experimentos: exps }));
@@ -22,7 +23,7 @@ router.route('/').get(function (req, res) {
 /* Upload Page */
 router.route('/upload').get(function (req, res) {
     if (!auth.jwt_verify(req.cookies, req.originalUrl))
-        return res.render("pages/login", {});
+        return res.redirect("/login");
 
     res.render("pages/upload", {});
 });
@@ -30,7 +31,7 @@ router.route('/upload').get(function (req, res) {
 /* Experimentos Page */
 router.route('/experimentos').get(async (req, res) => {
     if (!auth.jwt_verify(req.cookies, req.originalUrl))
-        return res.render("pages/login", {});
+        return res.redirect("/login");
 
     service.get_experiments().then(exps =>
         res.render("pages/experimentos", { experimentos: exps }));
@@ -39,7 +40,7 @@ router.route('/experimentos').get(async (req, res) => {
 /* Download Page */
 router.route('/download').get(async (req, res) => {
     if (!auth.jwt_verify(req.cookies, req.originalUrl))
-        return res.render("pages/login", {});
+        return res.redirect("/login");
 
     service.get_all_experiment_files(req.query.experiment).then(files =>
         (files.length === 0) ?
@@ -50,7 +51,7 @@ router.route('/download').get(async (req, res) => {
 /* Watch Page */
 router.route('/experimentos/watch').get(async (req, res) => {
     if (!auth.jwt_verify(req.cookies, req.originalUrl))
-        return res.render("pages/login", {});
+        return res.redirect("/login");
 
     service.get_post_processed_data(req.query.experiment).then(files =>
         (Object.keys(files).length === 0) ?
@@ -62,10 +63,12 @@ router.route('/experimentos/watch').get(async (req, res) => {
 router.route('/in').post(multer().array(), async (req, res) => {
     const pass = await auth.check_passwd(req.body.password);
     if (pass) {
+        logger.error("Sign in success.");
         res.cookie("JWT", auth.jwt_sign());
         res.status(200);
         res.send("OK");
     } else {
+        logger.info("Sign in failed.");
         res.status(200);
         res.send("Invalid password");
     }
@@ -74,6 +77,7 @@ router.route('/in').post(multer().array(), async (req, res) => {
 
 /* SignOut API */
 router.post("/out", (req, res) => {
+    logger.info("Sign out ok.");
     res.clearCookie("JWT");
     res.status(200);
     res.redirect('/login');

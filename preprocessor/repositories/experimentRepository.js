@@ -46,6 +46,11 @@ module.exports = {
         return fs.existsSync(experiment_dir);
     },
 
+    create_experiment_path(path) {
+        var experiment_dir = utils.create_directory(path);
+        return fs.existsSync(experiment_dir);
+    },
+
     /**
      * Check if a experiment exists.
      * 

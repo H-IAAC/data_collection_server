@@ -29,6 +29,10 @@ module.exports = {
         return repo.create_experiment(experiment, activity, user);
     },
 
+    create_experiment_path(path) {
+        return repo.create_experiment_path(path);
+    },
+
     get_experiment_config(experiment, activity, user) {
         return repo.get_experiment_config(experiment, activity, user);
     },
