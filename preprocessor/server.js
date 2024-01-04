@@ -71,12 +71,14 @@ app.set('view engine', 'ejs');
 /**
  * set app to listen on port 'serverPort'
  */
-app.listen(serverPort, function () {
+const server = app.listen(serverPort, function () {
     console.log("--- H-IAAC - Viewer Tool ---");
     logger.info("server is running on port " + serverPort);
     logger.info("server PID " + process.pid);
     logger.info("  preprocessor_path: " + consts.PREPROCESSING_DIR);
     logger.info("  postprocessor_path: " + consts.POSTPROCESSING_DIR);
 });
+
+server.requestTimeout = 3600000; // 1 hour
 
 processMonitor.monitor_exit();
