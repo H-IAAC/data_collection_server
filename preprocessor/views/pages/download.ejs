@@ -3,7 +3,7 @@
     <% for (var i=0; i < files.pre.length; i++) { %>
         <div>
             <!--Don't show files with .video extension--> 
-            <a href="pre<%= files.pre[i].path %>"><%= files.pre[i].name%></a>
+            <a href="pre<%= files.pre[i].path %>"><%= files.pre[i].name%></a> (<%= files.pre[i].size%>)
         </div>
         <% } %>
 </div>
@@ -13,7 +13,7 @@
     <% for (var i=0; i < files.post.length; i++) { %>
         <div>
             <!--Don't show files with .video extension--> 
-            <a href="pos<%= files.post[i].path %>"><%= files.post[i].name%></a>
+            <a href="pos<%= files.post[i].path %>"><%= files.post[i].name%></a> (<%= files.pre[i].size%>)
         </div>
         <% } %>
 </div>
