@@ -54,9 +54,9 @@ router.route('/experimentos/watch').get(async (req, res) => {
         return res.redirect("/login");
 
     service.get_post_processed_data(req.query.experiment).then(files =>
-        (Object.keys(files).length === 0) ?
-            res.render("pages/error", { msg: "Files not found." }) :
-            res.render("pages/watch", { data: files}));
+        //(Object.keys(files).length === 0) ?
+        //    res.render("pages/error", { msg: "Files not found." }) :
+            res.render("pages/watch", { data: files }));
 });
 
 /* SignIn API */

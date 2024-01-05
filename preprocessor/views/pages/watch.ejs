@@ -22,7 +22,7 @@
             <canvas style="background-color: blue;"></canvas>
             <label class="graph_subtitles_child">Z (value 3)</label>
         </div>
-        <% if (data.csv.length === 0) { %>
+        <% if (data.csv === undefined || data.csv.length === 0) { %>
             <p>Missing CSV files.</p>
         <% } else { %>
             <div>
