@@ -182,7 +182,7 @@ module.exports = {
                 name: fileName,
                 path: path.sep + experiment + path.sep + fileName,
                 isVideo: (fileName.split('.').pop() === 'mp4') ? true : false,
-                size: (fs.statSync(dir_path + path.sep + fileName).size / (1024 * 1000)).toFixed(5) + " MB"
+                size: (fs.statSync(dir_path + path.sep + fileName).size / (1024 * 1000)).toFixed(2) + " MB"
             }
         }).map(function (v) {
             return v;

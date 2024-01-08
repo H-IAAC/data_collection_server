@@ -95,7 +95,7 @@ module.exports = {
 
             // Check if this experiment has a video available
             if (service.experiment_has_video(fields.directory)) {
-                const msg = "Video ppload ignored! A video already exists for this experiment " + fields.directory + ".";
+                const msg = "Video upload ignored! A video already exists for this experiment " + fields.directory + ".";
                 logger.info(msg);
                 return res.status(500).json({ status: msg });
             }

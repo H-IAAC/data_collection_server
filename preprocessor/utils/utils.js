@@ -47,12 +47,12 @@ module.exports = {
      */
     async validate_csv(file_path, file_name) {
 
-        // Filename format must be "<activity>_<on-body_position>__20230110.232916.csv"
-        var name_splitted = file_name.split("_");
-        var onbody_position = name_splitted[name_splitted.length - 3];
-        if (onbody_position === undefined) {
+        // Filename format must be "<user>_<activity>_<on-BodyPosition>__20230110.232916.csv"
+        if (txt.split("_").length !== 5)
             return "fail";
-        }
+
+        if (!txt.split("_")[0] || !txt.split("_")[1] || !txt.split("_")[2])
+            return "fail";
 
         // Check if csv content is consistent, this verification is not checking
         // if rows have the correct columns, it is a generic verification.
