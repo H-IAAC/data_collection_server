@@ -8,10 +8,6 @@ const directory = getUrlParameter('directory');
 
 addProgressBar();
 
-if (directory) {
-    exp_input.style.display = "none";
-}
-
 function videoSelected() {
     const file = document.getElementById('file').files[0];
 
@@ -48,9 +44,9 @@ function upload() {
 
     req.upload.addEventListener("progress", updateProgress);
     req.open("POST", "/api/video", true);
-    form.append("experiment", (directory) ? directory : "");
+    form.append("directory", (directory) ? directory : "");
     form.append("file", file);
-    form.append("duration", video.duration);
+    form.append("videoduration", video.duration);
     form.append("startTimestamp", (Date.parse(endTimestamp) - (Math.floor(video.duration * 1000))));
     form.append("endTimestamp", Date.parse(endTimestamp));
     form.append("overwrite", false);
