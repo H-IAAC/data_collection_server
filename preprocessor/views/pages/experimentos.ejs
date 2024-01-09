@@ -31,6 +31,8 @@
                         <% } %>
                         <% if (experimentos[i].videoAvailable === false) { %>
                             <p><button onclick="onClickUpload('<%= experimentos[i].directory %>')">Upload</button></p>
+                        <% } else if (!experimentos[i].hasPostProcessor) { %>
+                            <p><button style="color: #ff0000">Waiting post-processor execution</button></p>
                         <% } else { %>
                             <p><button onclick="onClickWatch('<%= experimentos[i].directory %>')">Watch</button></p>
                         <% } %>
