@@ -29,8 +29,11 @@
                         <% if (experimentos[i].error > 0) { %>
                             <p style="background-color:red; text-align: center;">Post Processor Error! Check the 'err.log' file.</p>
                         <% } %>
+
                         <% if (experimentos[i].videoAvailable === false) { %>
                             <p><button onclick="onClickUpload('<%= experimentos[i].directory %>')">Upload</button></p>
+                        <% } else if (experimentos[i].content < 2) { %>
+                            <p><button style="color: #ff0000">Waiting for the CSV files</button></p>
                         <% } else if (!experimentos[i].hasPostProcessor) { %>
                             <p><button style="color: #ff0000">Waiting post-processor execution</button></p>
                         <% } else { %>
