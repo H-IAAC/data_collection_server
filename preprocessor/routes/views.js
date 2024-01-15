@@ -48,6 +48,16 @@ router.route('/download').get(async (req, res) => {
             res.render("pages/download", { files: files }));
 });
 
+/* Logs Page */
+router.route('/log').get(async (req, res) => {
+    if (!auth.jwt_verify(req.cookies, req.originalUrl))
+        return res.redirect("/login");
+
+    service.get_log().then(function (log) {
+        res.render("pages/log", { log: log });
+    });
+});
+
 /* Watch Page */
 router.route('/experimentos/watch').get(async (req, res) => {
     if (!auth.jwt_verify(req.cookies, req.originalUrl))

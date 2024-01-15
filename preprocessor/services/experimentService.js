@@ -5,6 +5,10 @@ module.exports = {
         return repo.get_all_experiments();
     },
 
+    async get_log() {
+        return repo.get_log();
+    },
+
     async get_all_experiment_files(experiment_name) {
         return repo.get_pre_and_post_processed_files(experiment_name);
     },

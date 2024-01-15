@@ -302,5 +302,36 @@ module.exports = {
         jsonData.video = utils.get_directory_video(pre_dir);
 
         return jsonData;
+    },
+
+    /**
+     * Return log content
+     * 
+     * @return      Log content
+     */
+    async get_log() {
+
+        return fs.promises.readFile('log.out', 'utf8');
+
+
+
+        /*return await fs.readFile('log.out', 'utf-8', (err, contents) => {
+            if (err) {
+                return console.error(err)
+            }
+  
+            // Replace string occurrences
+            return contents.replace('\n', '</br>')
+        });*/
+
+        /*fs.readFile('log.out', 'utf-8', function (err, contents) {
+            if (err) {
+              console.log(err);
+              return;
+            }
+            console.log('contents: ' + contents);
+            console.log('---------------');
+            return contents;
+        });*/
     }
 }
