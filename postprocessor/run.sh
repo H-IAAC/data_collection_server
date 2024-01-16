@@ -18,14 +18,14 @@ status () {
     fi
 }
 
-start () {
-    echo 'Starting'
-    nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1 &
-}
-
-start2 () {
-    echo 'Starting'
-    python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1
+start () {    
+    echo 'Starting' 
+    if [ -z $2 ]; then
+        nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1 &
+    else
+        # Start with web api enabled: ./run start 7998
+        nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME $2 >> log.out 2>&1 &
+    fi
 }
 
 stop () {
@@ -43,8 +43,7 @@ help () {
 
 case $1 in
     status) status ;;
-    start) start ;;
-    start2) start2 ;;
+    start) start $# $2 ;;
     stop) stop ;;
     isrunning) status ;;
     *) help ;;
