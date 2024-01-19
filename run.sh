@@ -4,7 +4,7 @@ PRE_DIR='preprocessor'
 POST_DIR='postprocessor'
 
 echo 'Starting pre processor'
-sh ./$PRE_DIR/run.sh docker 7999 &
+sh ./$PRE_DIR/run.sh docker 8080 &
 
 echo 'Starting post processor'
 sh ./$POST_DIR/run.sh docker 7998 &
