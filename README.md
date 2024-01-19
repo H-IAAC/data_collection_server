@@ -4,7 +4,10 @@
 - **postprocessor:** Python tool responsible for prepare csv data for visualization, checking timelapse, sync with video, split into multiple files, cleanning unnecessary content, ...
 - **server.sh:** Script to start/stop the solution.
 
-## Installation:
+## Installation using docker images:
+  docker compose up -d
+
+## Installation without docker:
 ### Pre processor:
 1) Check system requirements:
 - node v18.12.1
@@ -15,6 +18,9 @@
 
 3) Run npm command to install dependencies
 > npm install
+
+4) Start execution
+> ./run start <port>
 
 ### Post processor:
 1) Check system requirements:
@@ -27,8 +33,8 @@
 3) Install dependencies
 > pip install watchdog argparse pandas numpy  shutil ConfigParser
 
-## Service execution:
-  Use the server.sh script to execute the preprocessor and postprocessor tools,
+4) Start execution
+> ./run start
 
 &nbsp;&nbsp;**Development env:**\
 &emsp;&emsp;`bash server.sh start pre port 3000`\

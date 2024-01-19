@@ -28,6 +28,18 @@ start () {
     fi
 }
 
+docker () {
+    echo 'Starting'
+    if [ $# -eq 2 ]
+    then
+        echo ' Using PORT:' $2
+        python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME $2 >> log.out 2>&1
+    else
+        echo ' ERROR! Missing PORT configuration.'
+        echo ' Please set the port argument'
+    fi
+}
+
 stop () {
    echo 'Stop:'
    echo "  Process: $(ps -aux | grep $SCRIPTPATH | grep python3 | awk -F ' ' '{print $2}')"
@@ -44,6 +56,7 @@ help () {
 case $1 in
     status) status ;;
     start) start $# $2 ;;
+    docker) docker $# $2 ;;
     stop) stop ;;
     isrunning) status ;;
     *) help ;;
