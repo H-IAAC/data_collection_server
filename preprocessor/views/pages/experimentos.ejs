@@ -32,8 +32,6 @@
 
                         <% if (experimentos[i].videoAvailable === false) { %>
                             <p><button onclick="onClickUpload('<%= experimentos[i].directory %>')">Upload</button></p>
-                        <% } else if (experimentos[i].content < 2) { %>
-                            <p><button style="color: #ff0000">Missing CSV files</button></p>
                         <% } else if (!experimentos[i].hasPostProcessor) { %>
                             <p><button style="color: #ff0000">Waiting post-processor execution</button></p>
                         <% } else { %>

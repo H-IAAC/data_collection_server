@@ -7,7 +7,7 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 status () {
     echo 'Status:'
-    if [[ $(ps -aux | grep $SCRIPTPATH | grep python3 | awk -F ' ' '{print $2}') -ne 0 ]]
+    if [[ $(ps -aux | grep $SCRIPTPATH | grep python3 | awk -F ' ' '{print $2}' | head -n 1) -ne 0 ]]
     then
          echo "  Process: $(ps -aux | grep $SCRIPTPATH | grep python3 | awk -F ' ' '{print $2}')"
          echo "    $(ps -aux | grep $SCRIPTPATH | grep python3 | awk '{ s = ""; for (i =11; i <= NF; i++) s = s $i " "; print s }')"
@@ -18,7 +18,7 @@ status () {
     fi
 }
 
-start () {    
+start () {
     echo 'Starting' 
     if [ -z $2 ]; then
         nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1 &

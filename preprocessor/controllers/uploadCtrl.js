@@ -156,8 +156,10 @@ module.exports = {
             const output_dir = service.create_experiment(fields.experiment, fields.activity, fields.subject);
             const file_output_path = output_dir + uploaded_filename;
 
-            if (await utils.validate_csv(uploaded_filepath, uploaded_filename) !== "success") {
-                return res.status(500).json({ status: "Invalid CSV name and content (" + uploaded_filename + ")" });
+            if (path.extname(uploaded_filename) === "csv") {
+                if (await utils.validate_csv(uploaded_filepath, uploaded_filename) !== "success") {
+                    return res.status(500).json({ status: "Invalid CSV name and content (" + uploaded_filename + ")" });
+                }
             }
 
             logger.info("Copying file " + uploaded_filepath + " to " + file_output_path + ".");

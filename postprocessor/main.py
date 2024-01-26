@@ -3,11 +3,13 @@ import sys
 import time
 import pathlib
 import argparse
+from multiprocessing import Process
 from ProcessFile import ProcessFile
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
+from Logger import Logger
 import logging
 
 config = {
@@ -37,7 +39,7 @@ class FileCreateHandler(FileSystemEventHandler):
             # When event is related to a directory, the event can be ignore.
             return
 
-        print(f"*- {event.src_path} detected")
+        Logger.log(f"*- {event.src_path} detected")
 
         # Check file historical size to make sure that file
         # is not been copied.
@@ -48,7 +50,7 @@ class FileCreateHandler(FileSystemEventHandler):
 
         process = ProcessFile(event.src_path, self.postprocessor_path)
         process.check_event()
-        print(f"*-- {event.src_path} process completed")
+        Logger.log(f"*-- {event.src_path} process completed")
 
 ######
 # Display the log file when accessing the '/' path.
@@ -85,7 +87,41 @@ def read_log(log_path):
 
         return content
 
+######
+# 
+#
+#####
+def init_flask(server_port):
+    Logger.log("Init Flask APIs...")
+    if (server_port != None):
+        app.run(host='0.0.0.0', port=server_port)
 
+######
+# 
+#
+#####
+def init_observer(postprocessor_path):
+    Logger.log("Init filesystem observer...")
+    event_handler = FileCreateHandler(postprocessor_path)
+    observer = Observer()
+
+    try:
+        # Attach the observer to the event handler.
+        observer.schedule(event_handler, preprocessor_path, recursive=True)
+
+        # Start the observer.
+        observer.start()
+    except FileNotFoundError:
+        Logger.log(f"Error: Directory not found: {preprocessor_path}")
+        sys.exit(-1)
+    
+    try:
+        while observer.is_alive():
+            observer.join(1)
+    finally:
+        observer.stop()
+        observer.join()
+        Logger.log("Filesystem observer finish")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -102,36 +138,19 @@ if __name__ == "__main__":
     postprocessor_path = f"{pathlib.Path(__file__).parent.resolve()}{os.sep}{args.postprocessor}"
     server_port = args.port
     
-    print(f"Running:")
-    print(f"  preprocessor_path: {preprocessor_path}")
-    print(f"  postprocessor_path: {postprocessor_path}")
-    print(f"  server_port: {server_port}")
+    Logger.log("=============================================")
+    Logger.log("=================  Starting  ================")
 
-    event_handler = FileCreateHandler(postprocessor_path)
+    Logger.log(f"Running:")
+    Logger.log(f"  preprocessor_path: {preprocessor_path}")
+    Logger.log(f"  postprocessor_path: {postprocessor_path}")
+    Logger.log(f"  server_port: {server_port}")
 
-    print("=============================================")
-    print(f"=================  Starting  ================")
+    p1 = Process(target=init_observer, args=([postprocessor_path]))
+    p1.start()
+  
+    p2 = Process(target=init_flask, args=([server_port]))
+    p2.start()
 
-    # Start flask
-    if (server_port != None):
-        app.run(host='0.0.0.0', port=server_port)
-
-    # Create an observer.
-    observer = Observer()
-
-    try:
-        # Attach the observer to the event handler.
-        observer.schedule(event_handler, preprocessor_path, recursive=True)
-
-        # Start the observer.
-        observer.start()
-    except FileNotFoundError:
-        print(f"Error: Directory not found: {preprocessor_path}")
-        sys.exit(-1)
-    
-    try:
-        while observer.is_alive():
-            observer.join(1)
-    finally:
-        observer.stop()
-        observer.join()
+    p1.join()
+    p2.join()

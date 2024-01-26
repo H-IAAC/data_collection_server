@@ -1,6 +1,7 @@
 import pandas
 import numpy as np
 from pathlib import Path
+from Logger import Logger
 
 
 class CsvUtils:
@@ -10,11 +11,11 @@ class CsvUtils:
         
         number_of_rows = len(csv.index)
         
-        print(f"    total number_of_rows {number_of_rows} before drop_row_lower_than")
-        print(f"    timestamp FIRST ROW: {csv.iloc[0]['Timestamp']}, \n deleting row lower than {video_start_time}")
+        Logger.log(f"    total number_of_rows {number_of_rows} before drop_row_lower_than")
+        Logger.log(f"    timestamp FIRST ROW: {csv.iloc[0]['Timestamp']}, \n deleting row lower than {video_start_time}")
         csv.drop(csv[csv["Timestamp"] < video_start_time].index, inplace=True)
         number_of_rows = len(csv.index)
-        print(f"    total number_of_rows: {number_of_rows} after drop_row_lower_than")
+        Logger.log(f"    total number_of_rows: {number_of_rows} after drop_row_lower_than")
         if not number_of_rows or number_of_rows == 0:
             return False
         
@@ -27,11 +28,11 @@ class CsvUtils:
         csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
         number_of_rows = len(csv.index)
         
-        print(f"    total number_of_rows: {number_of_rows} before drop_row_bigger_than")      
-        print(f"    timestamp LAST ROW: {csv.iloc[-1]['Timestamp']}, \n  deleting bigger than {video_end_time}")
+        Logger.log(f"    total number_of_rows: {number_of_rows} before drop_row_bigger_than")      
+        Logger.log(f"    timestamp LAST ROW: {csv.iloc[-1]['Timestamp']}, \n  deleting bigger than {video_end_time}")
         csv.drop(csv[csv["Timestamp"] > video_end_time].index, inplace=True)
         number_of_rows = len(csv.index)
-        print(f"    total number_of_rows: {number_of_rows} after drop_row_bigger_than") 
+        Logger.log(f"    total number_of_rows: {number_of_rows} after drop_row_bigger_than") 
         if not number_of_rows or number_of_rows == 0:
             return False        
         
@@ -50,7 +51,7 @@ class CsvUtils:
         try:
             on_body_positions = Path(file).stem.split('_')[-3];
         except IndexError:
-            print(f"    Error!!! Invalid CSV filename: {Path(file).stem}. Missing 'on-body position' flag")
+            Logger.log(f"    Error!!! Invalid CSV filename: {Path(file).stem}. Missing 'on-body position' flag")
             return False
 
         # For each sensor on 'Sensor Name' column...
@@ -88,7 +89,7 @@ class CsvUtils:
             # Save rows to a new csv file.
             csv_file = dest + sensor + '_' + on_body_positions + '.csv'
             csv_sensor.to_csv(csv_file, index=False, sep=',')
-            print(f"CSV {csv_file} created")
+            Logger.log(f"CSV {csv_file} created")
 
             files_created.append(csv_file)
             

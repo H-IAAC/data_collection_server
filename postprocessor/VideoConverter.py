@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import ffmpegcv
+from Logger import Logger
 import face_recognition #https://github.com/ageitgey/face_recognition
 
 class VideoConverter:

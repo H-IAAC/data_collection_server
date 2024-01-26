@@ -48,10 +48,10 @@ module.exports = {
     async validate_csv(file_path, file_name) {
 
         // Filename format must be "<user>_<activity>_<on-BodyPosition>__20230110.232916.csv"
-        if (txt.split("_").length !== 5)
+        if (file_name.split("_").length !== 5)
             return "fail";
 
-        if (!txt.split("_")[0] || !txt.split("_")[1] || !txt.split("_")[2])
+        if (!file_name.split("_")[0] || !file_name.split("_")[1] || !file_name.split("_")[2])
             return "fail";
 
         // Check if csv content is consistent, this verification is not checking

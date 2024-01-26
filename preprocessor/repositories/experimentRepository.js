@@ -125,6 +125,8 @@ module.exports = {
                     config = true;
                 } else if (path.extname(file).toLowerCase() === '.csv') {
                     total_number_of_files++;
+                } else if (path.extname(file).toLowerCase() === '.zip') {
+                    total_number_of_files++;
                 }
             })
 
