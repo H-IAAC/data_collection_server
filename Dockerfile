@@ -41,7 +41,7 @@ RUN mkdir -p ${PRE_PROCESSOR_PATH}/_preprocessor
 RUN mkdir -p ${PRE_PROCESSOR_PATH}/_postprocessor
 
 RUN ln -s ${PRE_PROCESSOR_PATH}/_preprocessor /pre_dataset
-RUN ln -s ${POST_PROCESSOR_PATH}/_postprocessor /post_dataset
+RUN ln -s ${PRE_PROCESSOR_PATH}/_postprocessor /post_dataset
 
 WORKDIR ${SRC_PATH}
 CMD ["sh", "run.sh"]

@@ -5,9 +5,11 @@ services:
     image: hiaactools/viewer-tool
     ports:
       - 8080:8080
+      - 7998:7998
     volumes:
       - ./files/pre:/pre_dataset
-      - ./files/post:/post_datase
+      - ./files/post:/post_dataset
+      - ./files/logs:/logs
 
   jupyter:
     image: hiaactools/viewer-tool-jupyter
