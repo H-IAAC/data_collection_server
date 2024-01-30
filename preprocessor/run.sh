@@ -23,7 +23,7 @@ start () {
     if [ $# -eq 2 ]
     then
         echo ' Using PORT:' $2
-        nohup node $SCRIPTPATH/server.js $2 $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1 &
+        nohup node $SCRIPTPATH/server.js $2 $PRE_DIR $POST_DIR $TOOL_NAME >> $SCRIPTPATH/log_pre.out 2>&1 &
     else
         echo ' ERROR! Missing PORT configuration.'
         echo ' Please set the port argument'
@@ -37,7 +37,7 @@ docker () {
     if [ $# -eq 2 ]
     then
         echo ' Using PORT:' $2
-        node $SCRIPTPATH/server.js $2 $PRE_DIR $POST_DIR $TOOL_NAME >> log.out 2>&1
+        node $SCRIPTPATH/server.js $2 $PRE_DIR $POST_DIR $TOOL_NAME >> $SCRIPTPATH/log_pre.out 2>&1
     else
         echo ' ERROR! Missing PORT configuration.'
         echo ' Please set the port argument'

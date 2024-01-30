@@ -18,7 +18,8 @@ class Logger:
 
     @staticmethod
     def log(msg):
-        log_file = 'log.out'
+        path = Path(__file__).parent.resolve()
+        log_file = str(path) + '/log_post.out'
 
         now = datetime.now()
         current_time = now.strftime("%Y-%m-%d %H:%M:%S")

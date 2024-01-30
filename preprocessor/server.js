@@ -72,7 +72,9 @@ app.set('view engine', 'ejs');
  * set app to listen on port 'serverPort'
  */
 const server = app.listen(serverPort, function () {
+    console.log("--- -------------------- ---");
     console.log("--- H-IAAC - Viewer Tool ---");
+    console.log("--- ----- Starting ----- ---");
     logger.info("server is running on port " + serverPort);
     logger.info("server PID " + process.pid);
     logger.info("  preprocessor_path: " + consts.PREPROCESSING_DIR);

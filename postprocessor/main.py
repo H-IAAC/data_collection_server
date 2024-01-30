@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import pathlib
+from pathlib import Path
 import argparse
 from multiprocessing import Process
 from ProcessFile import ProcessFile
@@ -59,7 +60,8 @@ class FileCreateHandler(FileSystemEventHandler):
 @app.route("/")
 @cross_origin()
 def get():
-    log_path = './log.out'
+    path = Path(__file__).parent.resolve()
+    log_path = str(path) + '/log_post.out'
 
     if not os.path.exists(log_path):
         return "No log content to display."

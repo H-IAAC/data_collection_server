@@ -313,7 +313,7 @@ module.exports = {
      */
     async get_log() {
 
-        return fs.promises.readFile('log.out', 'utf8');
+        return fs.promises.readFile(path.resolve(__dirname, "../log_pre.out"), 'utf8');
 
 
 
