@@ -46,7 +46,7 @@ module.exports = {
         })
         .on ('file', function (name, file) {
             console.log ("file: " + name + " - " + file) ;
-            //fs.rename (file.path, form.uploadDir + '/' + file.name) ;
+            //fs.copyFile (file.path, form.uploadDir + '/' + file.name) ;
             //filename =file.name ;
         })
         .on ('end', function () {
@@ -104,7 +104,7 @@ module.exports = {
 
             logger.info("Copying file " + uploaded_filepath + " to " + video_output_path + ".");
 
-            fs.rename(uploaded_filepath, video_output_path, (err) => {
+            fs.copyFile(uploaded_filepath, video_output_path, (err) => {
                 if (err) {
                     const msg = "Copying file " + uploaded_filepath + " failed: " + err;
                     logger.error(msg);
@@ -163,7 +163,7 @@ module.exports = {
             }
 
             logger.info("Copying file " + uploaded_filepath + " to " + file_output_path + ".");
-            fs.rename(uploaded_filepath, file_output_path, (err) => {
+            fs.copyFile(uploaded_filepath, file_output_path, (err) => {
                 if (err) {
                     const msg = "Copying file " + uploaded_filepath + " failed: " + err;
                     logger.error(msg);
@@ -212,7 +212,7 @@ module.exports = {
             const file_output_path = output_dir + uploaded_filename;
 
             logger.info("Copying file " + uploaded_filepath + " to " + file_output_path + ".");
-            fs.rename(uploaded_filepath, file_output_path, (err) => {
+            fs.copyFile(uploaded_filepath, file_output_path, (err) => {
                 if (err) {
                     const msg = "Copying file " + uploaded_filepath + " failed: " + err;
                     logger.error(msg);

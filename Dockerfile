@@ -37,8 +37,8 @@ RUN npm install
 WORKDIR ${POST_PROCESSOR_PATH}
 RUN pip3 install -r requirements.txt
 
-RUN mkdir ${PRE_PROCESSOR_PATH}/_preprocessor
-RUN mkdir ${PRE_PROCESSOR_PATH}/_postprocessor
+RUN mkdir -p ${PRE_PROCESSOR_PATH}/_preprocessor
+RUN mkdir -p ${PRE_PROCESSOR_PATH}/_postprocessor
 
 RUN ln -s ${PRE_PROCESSOR_PATH}/_preprocessor /pre_dataset
 RUN ln -s ${POST_PROCESSOR_PATH}/_postprocessor /post_dataset
