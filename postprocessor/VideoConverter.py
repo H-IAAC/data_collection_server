@@ -6,7 +6,7 @@ import face_recognition #https://github.com/ageitgey/face_recognition
 
 class VideoConverter:
     @staticmethod
-    def hide_faces2(video_in, video_out):
+    def hide_faces_using_face_recognition(video_in, video_out):
         
         # Get a reference to webcam #0 (the default one)
         video_capture = cv2.VideoCapture(video_in)
@@ -61,7 +61,7 @@ class VideoConverter:
     
     
     @staticmethod
-    def hide_faces(video_in, video_out):
+    def hide_faces_using_mediapipe(video_in, video_out):
         cap = cv2.VideoCapture(video_in)
 
         video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

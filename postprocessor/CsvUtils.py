@@ -7,7 +7,8 @@ from Logger import Logger
 class CsvUtils:
     @staticmethod
     def drop_row_lower_than(file, video_start_time):
-        csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
+        dtype_dict = {'Label': 'str', 'Sensor Name': 'str', 'Power Consumption (mAh)': 'float64', 'Sensor Frequency (Hz)': 'Number', 'Timestamp': 'Number', 'Value 1': 'str', 'Value 2': 'str', 'Value 3': 'str'}
+        csv = pandas.read_csv(file, sep=';', skipinitialspace=True, dtype=dtype_dict)
         
         number_of_rows = len(csv.index)
         
@@ -25,7 +26,8 @@ class CsvUtils:
         
     @staticmethod
     def drop_row_bigger_than(file, video_end_time):
-        csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
+        dtype_dict = {'Label': 'str', 'Sensor Name': 'str', 'Power Consumption (mAh)': 'float64', 'Sensor Frequency (Hz)': 'Number', 'Timestamp': 'Number', 'Value 1': 'float64', 'Value 2': 'float64', 'Value 3': 'float64'}
+        csv = pandas.read_csv(file, sep=';', skipinitialspace=True, dtype=dtype_dict)
         number_of_rows = len(csv.index)
         
         Logger.log(f"    total number_of_rows: {number_of_rows} before drop_row_bigger_than")      
@@ -43,7 +45,8 @@ class CsvUtils:
     # Split csv in many others based on 'Sensor Name'
     @staticmethod
     def split(file, dest, video_start_time):
-        csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
+        dtype_dict = {'Label': 'str', 'Sensor Name': 'str', 'Power Consumption (mAh)': 'float64', 'Sensor Frequency (Hz)': 'Number', 'Timestamp': 'Number', 'Value 1': 'float64', 'Value 2': 'float64', 'Value 3': 'float64'}
+        csv = pandas.read_csv(file, sep=';', skipinitialspace=True, dtype=dtype_dict)
         # Get a list of unique values on 'Sensor Name' column
         sensors = csv['Sensor Name'].unique()
         files_created = []
