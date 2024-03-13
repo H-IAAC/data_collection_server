@@ -106,11 +106,14 @@ class ProcessFile:
         Logger.log(f"  Copy from: {mp4_fullpath} to: {postprocessor_directory}{mp4_file}")
         shutil.copyfile(mp4_fullpath, f"{postprocessor_directory}{mp4_file}")
         
-        Logger.log(f"  VideoConverter: {mp4_fullpath} to: {postprocessor_directory}_face_recognition{mp4_file} ------")
-        VideoConverter.hide_faces_using_face_recognition(mp4_fullpath, f"{postprocessor_directory}_face_recognition{mp4_file}")
+        #Logger.log(f"  VideoConverter: {mp4_fullpath} to: {postprocessor_directory}_mediapipe{mp4_file} ------")
+        #VideoConverter.hide_faces_using_mediapipe(mp4_fullpath, f"{postprocessor_directory}_mediapipe{mp4_file}")
 
-        Logger.log(f"  VideoConverter: {mp4_fullpath} to: {postprocessor_directory}_mediapipe{mp4_file} ------")
-        VideoConverter.hide_faces_using_mediapipe(mp4_fullpath, f"{postprocessor_directory}_mediapipe{mp4_file}")
+        Logger.log(f"  VideoConverter: {mp4_fullpath} to: {postprocessor_directory}_hide_faces_using_blurface{mp4_file}")
+        VideoConverter.hide_faces_using_blurface(mp4_fullpath, f"{postprocessor_directory}_blurface{mp4_file}")
+
+        #Logger.log(f"  VideoConverter: {mp4_fullpath} to: {postprocessor_directory}_face_recognition{mp4_file} ------")
+        #VideoConverter.hide_faces_using_face_recognition(mp4_fullpath, f"{postprocessor_directory}_face_recognition{mp4_file}")
 
         # Need to check if there are .csv files, in the 'waiting' directory
         waiting_dir = f"{postprocessor_directory}waiting{os.sep}"
