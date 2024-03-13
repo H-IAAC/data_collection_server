@@ -61,7 +61,7 @@ class FileCreateHandler(FileSystemEventHandler):
 @cross_origin()
 def get():
     path = Path(__file__).parent.resolve()
-    log_path = str(path) + '/log_post.out'
+    log_path = str(path) + '/logs/log_post.out'
 
     if not os.path.exists(log_path):
         return "No log content to display."

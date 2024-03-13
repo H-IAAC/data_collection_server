@@ -21,10 +21,10 @@ status () {
 start () {
     echo 'Starting' 
     if [ -z $2 ]; then
-        nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> $SCRIPTPATH/log_post.out 2>&1 &
+        nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME >> $SCRIPTPATH/logs/log_post.out 2>&1 &
     else
         # Start with web api enabled: ./run start 7998
-        nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME $2 >> $SCRIPTPATH/log_post.out 2>&1 &
+        nohup python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME $2 >> $SCRIPTPATH/logs/log_post.out 2>&1 &
     fi
 }
 
@@ -33,7 +33,7 @@ docker () {
     if [ $# -eq 2 ]
     then
         echo ' Using PORT:' $2
-        python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME $2 >> $SCRIPTPATH/log_post.out 2>&1
+        python3 $SCRIPTPATH/main.py $PRE_DIR $POST_DIR $TOOL_NAME $2 >> $SCRIPTPATH/logs/log_post.out 2>&1
     else
         echo ' ERROR! Missing PORT configuration.'
         echo ' Please set the port argument'
