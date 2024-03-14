@@ -58,6 +58,8 @@ class VideoConverter:
     
     @staticmethod
     def hide_faces_using_mediapipe(video_in, video_out):
+        print(f"->    hide_faces_using_mediapipe")
+
         cap = cv2.VideoCapture(video_in)
 
         video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -118,6 +120,8 @@ class VideoConverter:
 
     @staticmethod
     def hide_faces_using_blurface(vfile_in, vfile_out):
+        print(f"->    hide_faces_using_blurface")
+
         vidin = cv2.VideoCapture(vfile_in)
         video_fps = int(vidin.get(cv2.CAP_PROP_FPS))
         video_width = int(vidin.get(cv2.CAP_PROP_FRAME_WIDTH))
