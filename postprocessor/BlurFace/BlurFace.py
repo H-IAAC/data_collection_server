@@ -1,11 +1,12 @@
+from pathlib import Path
 import numpy as np
 import cv2
 import os
 
 class BlurFace:
     def load(self, image, method="simple", min_confidence=0.5):
-        prototxtPath = os.path.abspath("./BlurFace/face_detector/deploy.prototxt")
-        weightsPath = os.path.abspath("./BlurFace/face_detector/res10_300x300_ssd_iter_140000.caffemodel")
+        prototxtPath = os.path.abspath(f"{Path(__file__).parent.resolve()}/face_detector/deploy.prototxt")
+        weightsPath = os.path.abspath(f"{Path(__file__).parent.resolve()}/face_detector/res10_300x300_ssd_iter_140000.caffemodel")
 
         net = cv2.dnn.readNet(prototxtPath, weightsPath)
 

@@ -31,7 +31,7 @@ module.exports = {
         if (!fs.existsSync(dir_path)) {
             // .. if not, create it.
             logger.info("Creating directory: " + dir_path);
-            fs.mkdirSync(dir_path);
+            fs.mkdirSync(dir_path, { recursive: true });
         } else {
             return false;
         }

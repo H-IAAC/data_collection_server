@@ -1,23 +1,34 @@
-ARG NODE_VERSION=18.12.1
-ARG ALPINE_VERSION=3.16
+FROM ubuntu:jammy
 
-FROM node:${NODE_VERSION}-alpine AS node
-FROM alpine:${ALPINE_VERSION}
+ENV DEBIAN_FRONTEND=noninteractive
 
-COPY --from=node /usr/lib /usr/lib
-COPY --from=node /usr/local/lib /usr/local/lib
-COPY --from=node /usr/local/include /usr/local/include
-COPY --from=node /usr/local/bin /usr/local/bin
+RUN apt update && apt upgrade -y
+
+# install essential packages
+RUN apt install -y curl gpg
+
+# add Node.js, PHP and ImageMagick repos
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+
+RUN apt update && apt install -y \
+  nodejs \
+  python3 \
+  python3-pip \
+  python3-opencv \
+  python3-pandas \
+  ffmpeg \
+  libavcodec-extra \
+  libopencv-objdetect4.5d \
+  libopencv-imgproc4.5d \
+  libopencv-imgcodecs4.5d \
+  libopencv-contrib4.5d \
+  libopencv-shape4.5d \
+  libopencv-stitching4.5d \
+  libopencv-video4.5d
+
+RUN python3 -m pip install --upgrade pip setuptools wheel
 
 EXPOSE 8080
-
-RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
-RUN python3 -m ensurepip
-RUN apk update
-RUN apk add py-pip
-RUN apk --update add --no-cache g++
-RUN pip3 install --no-cache --upgrade pip setuptools wheel && \
-    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 
 ENV PYTHONUNBUFFERED=1
 ENV SRC_PATH=/usr/src/h-iaac/captureX
@@ -27,7 +38,7 @@ ENV POST_PROCESSOR_PATH=${SRC_PATH}/postprocessor
 RUN mkdir -p ${PRE_PROCESSOR_PATH}
 RUN mkdir -p ${POST_PROCESSOR_PATH}
 
-COPY ./ ${SRC_PATH}
+COPY ./run.sh ${SRC_PATH}
 COPY ./preprocessor ${PRE_PROCESSOR_PATH}
 COPY ./postprocessor ${POST_PROCESSOR_PATH} 
 
