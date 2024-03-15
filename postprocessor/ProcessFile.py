@@ -104,8 +104,8 @@ class ProcessFile:
         mp4_file = self.filename + ".mp4"
         preprocessor_mp4_fullpath = self.fullpath.replace(".video", ".mp4")
         postprocessor_mp4_fullpath = f"{postprocessor_directory}{mp4_file}"
-        Logger.log(f"  Copy from: {preprocessor_mp4_fullpath} to: {postprocessor_mp4_fullpath}")
-        shutil.copyfile(preprocessor_mp4_fullpath, postprocessor_mp4_fullpath)
+        #Logger.log(f"  Copy from: {preprocessor_mp4_fullpath} to: {postprocessor_mp4_fullpath}")
+        #shutil.copyfile(preprocessor_mp4_fullpath, postprocessor_mp4_fullpath)
 
         # Process video, to hide faces
         hidden_face_video = f"{postprocessor_directory}facehidden-{mp4_file}"
@@ -114,7 +114,7 @@ class ProcessFile:
         VideoConverter.hide_faces_using_mediapipe(preprocessor_mp4_fullpath, hidden_face_video)
 
         # Delete the original video, and then rename the new video
-        os.remove(postprocessor_mp4_fullpath)
+        #os.remove(postprocessor_mp4_fullpath)
         os.rename(hidden_face_video, postprocessor_mp4_fullpath)
 
         # Need to check if there are .csv files, in the 'waiting' directory
