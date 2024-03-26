@@ -1,7 +1,7 @@
 watchdog==2.2.1
 argparse==1.4.0
-#pandas==1.2.0
-#numpy==1.20.0
+pandas==2.2.1
+numpy==1.26.4
 shutils==0.1.0
 configparser==5.3.0
 flask==3.0.1

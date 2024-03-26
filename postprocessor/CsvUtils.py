@@ -7,14 +7,14 @@ from Logger import Logger
 class CsvUtils:
     @staticmethod
     def drop_row_lower_than(file, video_start_time):
-        dtype_dict = {'Label': 'str', 'Sensor Name': 'str', 'Power Consumption (mAh)': 'float64', 'Sensor Frequency (Hz)': 'Int64', 'Timestamp': 'Int64', 'Value 1': 'str', 'Value 2': 'str', 'Value 3': 'str'}
-        csv = pandas.read_csv(file, sep=';', skipinitialspace=True, dtype=dtype_dict)
+        Logger.log(f"drop_row_bigger_than {video_start_time}")
+        csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
         
         number_of_rows = len(csv.index)
         
         Logger.log(f"    total number_of_rows {number_of_rows} before drop_row_lower_than")
-        Logger.log(f"    timestamp FIRST ROW: {csv.iloc[0]['Timestamp']}, \n deleting row lower than {video_start_time}")
-        csv.drop(csv[csv["Timestamp"] < video_start_time].index, inplace=True)
+        Logger.log(f"    timestamp FIRST ROW: {csv.iloc[0]['Timestamp Server']}, \n deleting row lower than {video_start_time}")
+        csv.drop(csv[csv["Timestamp Server"] < video_start_time].index, inplace=True)
         number_of_rows = len(csv.index)
         Logger.log(f"    total number_of_rows: {number_of_rows} after drop_row_lower_than")
         if not number_of_rows or number_of_rows == 0:
@@ -26,13 +26,13 @@ class CsvUtils:
         
     @staticmethod
     def drop_row_bigger_than(file, video_end_time):
-        dtype_dict = {'Label': 'str', 'Sensor Name': 'str', 'Power Consumption (mAh)': 'float64', 'Sensor Frequency (Hz)': 'Int64', 'Timestamp': 'Int64', 'Value 1': 'str', 'Value 2': 'str', 'Value 3': 'str'}
-        csv = pandas.read_csv(file, sep=';', skipinitialspace=True, dtype=dtype_dict)
+        Logger.log(f"drop_row_bigger_than {video_end_time}")
+        csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
         number_of_rows = len(csv.index)
         
         Logger.log(f"    total number_of_rows: {number_of_rows} before drop_row_bigger_than")      
-        Logger.log(f"    timestamp LAST ROW: {csv.iloc[-1]['Timestamp']}, \n  deleting bigger than {video_end_time}")
-        csv.drop(csv[csv["Timestamp"] > video_end_time].index, inplace=True)
+        Logger.log(f"    timestamp LAST ROW: {csv.iloc[-1]['Timestamp Server']}, \n  deleting bigger than {video_end_time}")
+        csv.drop(csv[csv["Timestamp Server"] > video_end_time].index, inplace=True)
         number_of_rows = len(csv.index)
         Logger.log(f"    total number_of_rows: {number_of_rows} after drop_row_bigger_than") 
         if not number_of_rows or number_of_rows == 0:
@@ -45,8 +45,8 @@ class CsvUtils:
     # Split csv in many others based on 'Sensor Name'
     @staticmethod
     def split(file, dest, video_start_time):
-        dtype_dict = {'Label': 'str', 'Sensor Name': 'str', 'Power Consumption (mAh)': 'float64', 'Sensor Frequency (Hz)': 'Int64', 'Timestamp': 'Int64', 'Value 1': 'str', 'Value 2': 'str', 'Value 3': 'str'}
-        csv = pandas.read_csv(file, sep=';', skipinitialspace=True, dtype=dtype_dict)
+        Logger.log(f"Split csv by sensor name")
+        csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
         # Get a list of unique values on 'Sensor Name' column
         sensors = csv['Sensor Name'].unique()
         files_created = []
@@ -63,10 +63,10 @@ class CsvUtils:
             csv_sensor = csv[csv['Sensor Name'] == sensor]
             
             # Drop unused columns
-            csv_sensor = csv_sensor.drop(csv_sensor.columns[[0, 1, 2, 3]], axis=1)
+            csv_sensor = csv_sensor.drop(csv_sensor.columns[[1]], axis=1)
             
             #duplicate 'Timestamp' column
-            csv_sensor.insert(loc=0, column='VideoTimelapse', value=csv_sensor['Timestamp'])
+            csv_sensor.insert(loc=0, column='VideoTimelapse', value=csv_sensor['Timestamp Server'])
 
             # Drop duplicated rows
             csv_sensor = csv_sensor.drop_duplicates(keep='first')

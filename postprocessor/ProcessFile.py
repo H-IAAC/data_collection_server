@@ -83,14 +83,14 @@ class ProcessFile:
         try:
             # Remove rows before and after the video timestamps
             if not CsvUtils.drop_row_lower_than(csv_fullpath, int(metadata['startTimestamp'])):
-                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows lower than initial timestamp. Data were collected before recording the video.");
+                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows lower than initial timestamp. (Data were collected before recording the video.)");
                 return
                 
             if not CsvUtils.drop_row_bigger_than(csv_fullpath, int(metadata['endTimestamp'])):
                 Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows bigger than initial timestamp. (Data were collected after recording the video.)");
                 return
             
-            csv_files = CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
+            CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
         except Exception as e:
             Logger.log_error(postprocessor_directory, f"Something went wrong with file [{self.filename}] and {csv_fullpath}. {e}")
             
@@ -115,7 +115,7 @@ class ProcessFile:
 
         # Delete the original video, and then rename the new video
         #os.remove(postprocessor_mp4_fullpath)
-        os.rename(hidden_face_video, postprocessor_mp4_fullpath)
+        shutil.move(hidden_face_video, postprocessor_mp4_fullpath)
 
         # Need to check if there are .csv files, in the 'waiting' directory
         waiting_dir = f"{postprocessor_directory}waiting{os.sep}"
