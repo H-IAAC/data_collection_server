@@ -3,9 +3,6 @@ import mediapipe as mp
 import ffmpegcv
 from Logger import Logger
 import face_recognition #https://github.com/ageitgey/face_recognition
-from BlurFace.BlurFace import BlurFace
-import numpy as np
-import argparse
 import cv2
 
 class VideoConverter:
@@ -118,31 +115,3 @@ class VideoConverter:
         cap.release()
         out.release()
 
-    @staticmethod
-    def hide_faces_using_blurface(vfile_in, vfile_out):
-        print(f"->    hide_faces_using_blurface")
-
-        vidin = cv2.VideoCapture(vfile_in)
-        video_fps = int(vidin.get(cv2.CAP_PROP_FPS))
-        video_width = int(vidin.get(cv2.CAP_PROP_FRAME_WIDTH))
-        video_height = int(vidin.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-        out = ffmpegcv.VideoWriter(vfile_out, codec=None, fps=video_fps, frameSize=(video_width, video_height))
-
-        blurface = BlurFace()
-
-        while(True):
-            ret, frame = vidin.read()
-
-            if ret == True:
-                frame = blurface.load(frame, method="pixelate")
-
-                # Write the frame into the output file
-                out.write(frame)
-            # Break the loop
-            else:
-                break
-
-        # When everything done, release the video capture and video write objects
-        vidin.release()
-        out.release()

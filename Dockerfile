@@ -15,16 +15,7 @@ RUN apt update && apt install -y \
   python3 \
   python3-pip \
   python3-opencv \
-  python3-pandas \
-  ffmpeg \
-  libavcodec-extra \
-  libopencv-objdetect4.5d \
-  libopencv-imgproc4.5d \
-  libopencv-imgcodecs4.5d \
-  libopencv-contrib4.5d \
-  libopencv-shape4.5d \
-  libopencv-stitching4.5d \
-  libopencv-video4.5d
+  ffmpeg
 
 RUN python3 -m pip install --upgrade pip setuptools wheel
 
