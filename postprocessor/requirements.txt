@@ -11,3 +11,4 @@ werkzeug==3.0.0
 ffmpegcv==0.3.10
 mediapipe==0.10.11
 face_recognition==1.3.0
+moviepy==1.0.3

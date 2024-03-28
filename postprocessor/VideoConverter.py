@@ -4,6 +4,7 @@ import ffmpegcv
 from Logger import Logger
 import face_recognition #https://github.com/ageitgey/face_recognition
 import cv2
+import moviepy.editor as mpe
 
 class VideoConverter:
     @staticmethod
@@ -115,3 +116,19 @@ class VideoConverter:
         cap.release()
         out.release()
 
+        # Final video has no audio, to merge audio from original video
+        # to the new, we need to uncomment the line below.
+        #VideoConverter.merge_audio(video_in, video_out)
+
+    @staticmethod
+    def merge_audio(video_in, video_out):
+        # Load the video with audio
+        video_with_sound = mpe.VideoFileClip(video_in)
+
+        # Extract the audio from the video clip
+        audio = video_with_sound.audio
+
+        video_mute = mpe.VideoFileClip(video_out)
+
+        final = video_mute.set_audio(audio)
+        final.write_videofile(video_out, audio=True, codec='libx264', audio_codec='aac')
