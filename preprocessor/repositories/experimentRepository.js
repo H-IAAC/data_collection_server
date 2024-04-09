@@ -139,6 +139,8 @@ module.exports = {
                 content: total_number_of_files,
                 videoAvailable: isVideoAvailable,
                 hasPostProcessor: fs.existsSync(post_dir + dir_name),
+                hasPostProcessorContent: (fs.existsSync(post_dir + dir_name)) ?
+                    fs.readdirSync(post_dir + dir_name).filter(file => { return file.includes('.csv'); }).length : 0,
                 error: (fs.existsSync(post_dir + dir_name)) ?
                     fs.readdirSync(post_dir + dir_name).filter(file => { return file.includes('err.log'); }).length : 0,
                 configAvailable: config

@@ -65,6 +65,7 @@ class ProcessFile:
                 return
         except Exception as e:
             Logger.log_error(postprocessor_directory, f"Failed when processing: [{self.filename}]. {e}");
+            Logger.log_error(postprocessor_directory, f"Check if video was correctly uploaded.");
 
     def handle_csv_when_no_video(self, postprocessor_directory):
         # Without the video we cant process the file, as we dont have timestamps values
@@ -108,10 +109,12 @@ class ProcessFile:
         #shutil.copyfile(preprocessor_mp4_fullpath, postprocessor_mp4_fullpath)
 
         # Process video, to hide faces
-        hidden_face_video = f"{postprocessor_directory}facehidden-{mp4_file}"
-        Logger.log(f"  VideoConverter: {preprocessor_mp4_fullpath} to: {hidden_face_video}")
-        #VideoConverter.hide_faces_using_blurface(mp4_fullpath, hidden_face_video)
-        VideoConverter.hide_faces_using_mediapipe(preprocessor_mp4_fullpath, hidden_face_video)
+        try:
+            hidden_face_video = f"{postprocessor_directory}facehidden-{mp4_file}"
+            Logger.log(f"  VideoConverter: {preprocessor_mp4_fullpath} to: {hidden_face_video}")
+            VideoConverter.hide_faces_using_mediapipe(preprocessor_mp4_fullpath, hidden_face_video)
+        except Exception as e:
+            Logger.log_error(postprocessor_directory, f"Could not process video file {preprocessor_mp4_fullpath}. File is invalid.");
 
         # Delete the original video, and then rename the new video
         #os.remove(postprocessor_mp4_fullpath)
