@@ -6,6 +6,20 @@ from Logger import Logger
 
 class CsvUtils:
     @staticmethod
+    def checkFile(file):
+        Logger.log(f"Checking file {file}")
+        df_all = pandas.read_csv(file)
+        df_clean = pandas.read_csv(file,sep=';', skipinitialspace=True, on_bad_lines='skip')
+
+        original_size = len(df_all)
+        clean_size = len(df_clean)
+
+        if original_size != clean_size:
+            Logger.log(f"Checking file removed {original_size - clean_size} rows")
+
+        df_clean.to_csv(file)
+
+    @staticmethod
     def drop_row_lower_than(file, video_start_time):
         Logger.log(f"drop_row_bigger_than {video_start_time}")
         csv = pandas.read_csv(file, sep=';', skipinitialspace=True)
@@ -64,6 +78,8 @@ class CsvUtils:
             
             # Drop unused columns
             csv_sensor = csv_sensor.drop(csv_sensor.columns[[1]], axis=1)
+
+            csv_sensor.sort_values(by=['Timestamp Server'])
             
             #duplicate 'Timestamp' column
             csv_sensor.insert(loc=0, column='VideoTimelapse', value=csv_sensor['Timestamp Server'])

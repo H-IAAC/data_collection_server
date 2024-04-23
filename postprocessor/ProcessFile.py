@@ -81,6 +81,8 @@ class ProcessFile:
     def handle_csv(self, csv_fullpath, postprocessor_directory, video_metadata):
         metadata = self.get_video_metadata(video_metadata)
         
+        CsvUtils.checkFile(csv_fullpath)
+
         try:
             # Remove rows before and after the video timestamps
             if not CsvUtils.drop_row_lower_than(csv_fullpath, int(metadata['startTimestamp'])):
