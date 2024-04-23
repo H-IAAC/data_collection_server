@@ -8,8 +8,8 @@ class CsvUtils:
     @staticmethod
     def checkFile(file):
         Logger.log(f"Checking file {file}")
-        df_all = pandas.read_csv(file)
-        df_clean = pandas.read_csv(file,sep=';', skipinitialspace=True, on_bad_lines='skip')
+        df_all = pandas.read_csv(file, sep=';', skipinitialspace=True)
+        df_clean = pandas.read_csv(file, sep=';', skipinitialspace=True, on_bad_lines='skip')
 
         original_size = len(df_all)
         clean_size = len(df_clean)
@@ -17,7 +17,7 @@ class CsvUtils:
         if original_size != clean_size:
             Logger.log(f"Checking file removed {original_size - clean_size} rows")
 
-        df_clean.to_csv(file)
+        df_clean.to_csv(file, sep=';')
 
     @staticmethod
     def drop_row_lower_than(file, video_start_time):
