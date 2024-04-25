@@ -17,7 +17,7 @@ class CsvUtils:
         clean_size = len(df_clean)
 
         if original_size != clean_size:
-            Logger.log(f"Checking file removed {original_size - clean_size} rows {len(df_clean.columns)}")
+            Logger.log_error(f"Checking file removed {original_size - clean_size} rows {len(df_clean.columns)}")
 
         df_clean.to_csv(file, sep=';')
 
