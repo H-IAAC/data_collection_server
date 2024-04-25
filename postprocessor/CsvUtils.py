@@ -8,14 +8,16 @@ class CsvUtils:
     @staticmethod
     def checkFile(file):
         Logger.log(f"Checking file {file}")
-        df_all = pandas.read_csv(file, sep=';', skipinitialspace=True)
-        df_clean = pandas.read_csv(file, sep=';', skipinitialspace=True, on_bad_lines='skip')
+        df_all = pandas.read_csv(file)
+        df_clean = pandas.read_csv(file, sep=';',  on_bad_lines='skip')
+        columns=['Experiment Name', 'Sensor Name', 'Power Consumption (mAh)', 'Sensor Frequency (Hz)','Timestamp Server', 'Timestamp Local', 'Value 1', 'Value 2', 'Value 3', 'Data Status']
+        df_clean=df_clean.dropna(subset=columns)
 
         original_size = len(df_all)
         clean_size = len(df_clean)
 
         if original_size != clean_size:
-            Logger.log(f"Checking file removed {original_size - clean_size} rows")
+            Logger.log(f"Checking file removed {original_size - clean_size} rows {len(df_clean.columns)}")
 
         df_clean.to_csv(file, sep=';')
 
