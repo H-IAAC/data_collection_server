@@ -9,17 +9,18 @@ class CsvUtils:
     def checkFile(file):
         Logger.log(f"Checking file {file}")
         df_all = pandas.read_csv(file)
-        df_clean = pandas.read_csv(file, sep=';',  on_bad_lines='skip')
         columns=['Experiment Name', 'Sensor Name', 'Power Consumption (mAh)', 'Sensor Frequency (Hz)','Timestamp Server', 'Timestamp Local', 'Value 1', 'Value 2', 'Value 3', 'Data Status']
-        df_clean=df_clean.dropna(subset=columns)
+        df_ = pandas.read_csv(file, sep=';',  on_bad_lines='skip')
 
+        df_clean=df_[columns].dropna(subset=columns)
         original_size = len(df_all)
         clean_size = len(df_clean)
 
         if original_size != clean_size:
             Logger.log_error(f"Checking file removed {original_size - clean_size} rows {len(df_clean.columns)}")
-
-        df_clean.to_csv(file, sep=';')
+            vers_name=[element for element in df_.columns if 'HIAACApp v'  in element]
+            df_clean[vers_name]=''
+            df_clean.to_csv('clean'+file, sep=';',index=False)
 
     @staticmethod
     def drop_row_lower_than(file, video_start_time):
