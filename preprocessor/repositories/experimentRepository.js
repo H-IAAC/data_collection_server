@@ -101,14 +101,24 @@ module.exports = {
 
         return files.map(function (dir_name) {
 
-            var preprocess_files = fs.readdirSync(pre_dir + dir_name);
-
             var experiment = 'Experiment';
             var activity = '---';
             var user = 'user'
             var total_number_of_files = 0;
             var isVideoAvailable = false;
             var config = false;
+
+            var preprocess_files = fs.readdirSync(pre_dir + dir_name);
+
+            if (fs.existsSync(post_dir + dir_name)) {
+                var postprocess_files = fs.readdirSync(post_dir + dir_name);
+                postprocess_files.filter(file => {
+                    if (path.extname(file).toLowerCase() === '.mp4') {
+                        total_number_of_files++;
+                        isVideoAvailable = true;
+                    }
+                })
+            }
 
             // Extract experiment and user from directory name
             // directory name example: '<experiment> [<user>]'
@@ -117,11 +127,7 @@ module.exports = {
             activity = utils.extract_activity_from_directory(dir_name);
 
             preprocess_files.filter(file => {
-                if (path.extname(file).toLowerCase() === '.video') {
-                } else if (path.extname(file).toLowerCase() === '.mp4') {
-                    total_number_of_files++;
-                    isVideoAvailable = true;
-                } else if (path.extname(file).toLowerCase() === '.json') {
+                if (path.extname(file).toLowerCase() === '.json') {
                     config = true;
                 } else if (path.extname(file).toLowerCase() === '.csv') {
                     total_number_of_files++;
