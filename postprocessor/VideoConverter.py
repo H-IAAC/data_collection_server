@@ -1,3 +1,4 @@
+import os
 import cv2
 import mediapipe as mp
 import ffmpegcv
@@ -5,6 +6,8 @@ from Logger import Logger
 #import face_recognition #https://github.com/ageitgey/face_recognition
 import cv2
 import moviepy.editor as mpe
+from ultralytics import YOLO
+os.environ['OPENCV_GPU_DEVICE_ID'] = '0'
 
 class VideoConverter:
     #@staticmethod
@@ -119,6 +122,61 @@ class VideoConverter:
         # Final video has no audio, to merge audio from original video
         # to the new, we need to uncomment the line below.
         #VideoConverter.merge_audio(video_in, video_out)
+
+    @staticmethod
+    def hide_faces_using_yolo(video_in, video_out, model='./yolov8n-face.pt', expand=False):
+        cap = cv2.VideoCapture(video_in)
+
+        video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        video_fps = int(cap.get(cv2.CAP_PROP_FPS))
+
+        if (video_width >= 540 or video_width >= 960):
+            video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) / 2)
+            video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) / 2)
+
+        Logger.log(f"-> {video_in} video_height: {video_height} video_width: {video_width}")
+        Logger.log(f"-> {video_in} video_fps: {video_fps}")
+        
+        out = ffmpegcv.VideoWriter(video_out, 'h264', video_fps)
+        yolo = YOLO(model)
+
+        while True:
+            ret, img = cap.read()
+
+            if ret:
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                results = yolo.predict(img)
+                Logger.log("9")
+                names = yolo.names
+                face_id = list(names)[list(names.values()).index('face')]
+                boxes = results[0].boxes
+
+                for box in boxes:
+                    if box.cls == face_id:  # Check if the detected object is a person
+        
+                        bbox = box.xyxy.cpu().numpy()  # Convert tensor to numpy array
+                        bbox = bbox[0].astype(int)  # Convert to integers
+        
+                        # draw original bounding box
+                        # cv2.rectangle(img, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 2)
+        
+                        if expand == True:
+                            factor = 40
+                            cv2.rectangle(img, (bbox[0], bbox[1]), (bbox[2]+factor, bbox[3]+factor), (0,0,0), -1)
+
+                        else:
+                            cv2.rectangle(img, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0,0,0), -1)
+            
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+                out.write(img)
+
+            else:
+                Logger.log("9---")
+                break
+        
+        cap.release()
+        out.release()
 
     @staticmethod
     def merge_audio(video_in, video_out):

@@ -7,6 +7,7 @@ from pathlib import Path
 from zipfile import ZipFile
 from configparser import ConfigParser
 import tempfile
+from check_data import *
 
 class ProcessFile:
     def __init__(self, fullpath, postprocessor_path):
@@ -54,6 +55,7 @@ class ProcessFile:
                     return
 
                 self.handle_csv(self.fullpath, postprocessor_directory, f"{postprocessor_directory}{has_video}")
+                os.remove(self.fullpath)
 
             elif self.extension == '.video'.lower():
                 Logger.log(f"{self.filename} processing video file")
@@ -93,10 +95,20 @@ class ProcessFile:
                 Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows bigger than initial timestamp. (Data were collected after recording the video.)");
                 return
             
-            CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
+            processed_files = CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
         except Exception as e:
             Logger.log_error(postprocessor_directory, f"Something went wrong with file [{self.filename}] and {csv_fullpath}. {e}")
-            
+            return
+
+        for filename in processed_files:
+            if ".csv" in filename:
+                Logger.log("-> " + filename)
+                Logger.log("-> " + postprocessor_directory)
+                MAX_ACC_AMPLITUDE = 70
+                MAX_F = 97
+                script_check_data(filename, postprocessor_directory, MAX_ACC_AMPLITUDE, MAX_F)
+
+
     def handle_video(self, postprocessor_directory):
         # Get copy of .video to postprocessor directory
         metadata_file = self.filename + self.extension
@@ -114,9 +126,10 @@ class ProcessFile:
         try:
             hidden_face_video = f"{postprocessor_directory}facehidden-{mp4_file}"
             Logger.log(f"  VideoConverter: {preprocessor_mp4_fullpath} to: {hidden_face_video}")
-            VideoConverter.hide_faces_using_mediapipe(preprocessor_mp4_fullpath, hidden_face_video)
+            #VideoConverter.hide_faces_using_mediapipe(preprocessor_mp4_fullpath, hidden_face_video)
+            VideoConverter.hide_faces_using_yolo(preprocessor_mp4_fullpath, hidden_face_video)
         except Exception as e:
-            Logger.log_error(postprocessor_directory, f"Could not process video file {preprocessor_mp4_fullpath}. File is invalid.");
+            Logger.log_error(postprocessor_directory, f"Could not process video file {preprocessor_mp4_fullpath}: {e}");
 
         # Delete the original video, and then rename the new video
         #os.remove(postprocessor_mp4_fullpath)
