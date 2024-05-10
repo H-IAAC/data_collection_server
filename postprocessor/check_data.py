@@ -7,6 +7,7 @@ import seaborn as sns
 from scipy.signal import find_peaks
 import matplotlib.ticker as ticker 
 from Logger import Logger
+import os
 
 """Generate a plot figure with the data from the datasets. The figure will have a subplot for each dataset. 
 Each subplot will have a trace for each axis.
@@ -92,7 +93,7 @@ def plot_fun_window(dff,point_time,title_,path_out):
             axs[row].xaxis.set_major_locator(ticker.MultipleLocator(80)) 
             axs[row].tick_params(axis='x', rotation=0)
 
-    img_output = path_out + title_[:-4] + str(time[150])+'.png'
+    img_output = path_out + os.path.splitext(title_)[0][:-4] + str(time[150])+'.png'
     fig.savefig(img_output)                        
     Logger.log(f"plot_fun_window savefig path: {img_output}")
     #plt.show()
