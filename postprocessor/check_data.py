@@ -205,7 +205,7 @@ def check_quality(vector,timespamp,ref_frequency,ref_amplitud):
         return False
 
     if vector.max() > ref_amplitud or abs(vector.min()) > ref_amplitud:
-        Logger.log("...amplitude", vector.max() , vector.min())
+        Logger.log(f"...amplitude max: {vector.max()} min: {vector.min()}")
         return False
         
 
