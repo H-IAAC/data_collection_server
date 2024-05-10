@@ -288,9 +288,7 @@ module.exports = {
         // Get files from post processing directory
         files = await fs.promises.readdir(pos_dir);
         files.forEach(function (file) {
-            // Do not return mp4 from post processor directory, as it is already been returned with the
-            // pre processor content.
-            if (path.extname(file).toLowerCase() !== '.video' && path.extname(file).toLowerCase() !== '.mp4')
+            if (path.extname(file).toLowerCase() !== '.video' && path.extname(file).toLowerCase() !== '.png')
                 content.push(file);
         });
 
