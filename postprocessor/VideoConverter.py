@@ -124,8 +124,13 @@ class VideoConverter:
         #VideoConverter.merge_audio(video_in, video_out)
 
     @staticmethod
-    def hide_faces_using_yolo(video_in, video_out, model='./yolov8n-face.pt', expand=False):
+    def hide_faces_using_yolo(video_in, video_out, expand=False):
         cap = cv2.VideoCapture(video_in)
+
+        # set yolov8n model
+        cwd = os.getcwd()
+        model = f"{cwd}/yolov8n-face.pt"
+        Logger.log(f"-> yolov8n-face path {model}")
 
         video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -147,7 +152,7 @@ class VideoConverter:
             if ret:
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 results = yolo.predict(img)
-                Logger.log("9")
+
                 names = yolo.names
                 face_id = list(names)[list(names.values()).index('face')]
                 boxes = results[0].boxes
@@ -172,7 +177,6 @@ class VideoConverter:
                 out.write(img)
 
             else:
-                Logger.log("9---")
                 break
         
         cap.release()
