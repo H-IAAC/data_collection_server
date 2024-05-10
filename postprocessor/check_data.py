@@ -92,7 +92,7 @@ def plot_fun_window(dff,point_time,title_,path_out):
             axs[row].xaxis.set_major_locator(ticker.MultipleLocator(80)) 
             axs[row].tick_params(axis='x', rotation=0)
 
-    img_output = path_out+str(time[150])+'.png'
+    img_output = path_out + title_[:-4] + str(time[150])+'.png'
     fig.savefig(img_output)                        
     Logger.log(f"plot_fun_window savefig path: {img_output}")
     #plt.show()
@@ -201,11 +201,11 @@ ref_amplitude : Reference amplitude value of the dataset as ex 50 m/s^2
 def check_quality(vector,timespamp,ref_frequency,ref_amplitud):
     
     if vector.isna().any().any():
-        print("...nan")
+        Logger.log("...nan")
         return False
 
     if vector.max() > ref_amplitud or abs(vector.min()) > ref_amplitud:
-        print("...amplitude", vector.max() , vector.min())
+        Logger.log("...amplitude", vector.max() , vector.min())
         return False
         
 
@@ -214,7 +214,7 @@ def check_quality(vector,timespamp,ref_frequency,ref_amplitud):
     period=w_duration/timespamp.size
     ref_period= (1/ref_frequency)*1000
     if period>=ref_period:
-        print("...period", period)
+        Logger.log("...period", period)
         return False
 
     return True
