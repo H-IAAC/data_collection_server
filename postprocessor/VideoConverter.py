@@ -128,8 +128,7 @@ class VideoConverter:
         cap = cv2.VideoCapture(video_in)
 
         # set yolov8n model
-        cwd = os.getcwd()
-        model = f"{cwd}/yolov8n-face.pt"
+        model = f"{os.path.dirname(os.path.abspath(__file__)) }/yolov8n-face.pt"
         Logger.log(f"-> yolov8n-face path {model}")
 
         video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
