@@ -97,6 +97,11 @@ module.exports = {
             if (service.experiment_has_video(fields.directory)) {
                 const msg = "Video upload ignored! A video already exists for this experiment " + fields.directory + ".";
                 logger.info(msg);
+
+                fs.rmSync(uploaded_filepath, {
+                    force: true,
+                });
+
                 return res.status(500).json({ status: msg });
             }
 
@@ -115,6 +120,10 @@ module.exports = {
                 fs.writeFileSync(metadata_output_path, createVideoMetadata(uploaded_filename, fields));
 
                 logger.info("Receiving video: " + uploaded_filename + ", to directory: " + fields.directory + " - [success]");
+
+                fs.rmSync(uploaded_filepath, {
+                    force: true,
+                });
 
                 return res.json({ status: "Success" });
             });
@@ -173,6 +182,11 @@ module.exports = {
                 logger.info("Receiving file: " + uploaded_filename + 
                             " experiment: " + fields.experiment + " user: " + fields.subject + " [success]");
 
+
+                fs.rmSync(uploaded_filepath, {
+                    force: true,
+                });
+
                 return res.json({ status: "Success" });
             });
 
@@ -223,6 +237,10 @@ module.exports = {
                     " for experiment: [" + fields.experiment +
                     "] user: [" + fields.subject +
                     "] activity: [" + fields.activity + "] [success]");
+
+                fs.rmSync(uploaded_filepath, {
+                    force: true,
+                });
 
                 return res.json({ status: "Success" });
             });
