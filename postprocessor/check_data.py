@@ -99,7 +99,7 @@ def plot_fun_window(dff,point_time,title_,path_out):
         Logger.log(f"plot_fun_window savefig path: {img_output}")
         #plt.show()
     except Exception as e:
-        Logger.log_error(f"plot_fun_window failed for {title_}. exception: {e}")
+        Logger.log_error(path_out, f"plot_fun_window failed for {title_}. exception: {e}")
 
 """Process all dataset in order to search the acc peaks higher than a threshold and generate a plot figure of window using the 
 function plot_fun_window
@@ -187,7 +187,7 @@ def plot_fun_t(dff):
     axs[row].hist(timestamp_local_data, bins=30,color='blue')
     axs[row].set_xlabel('Latency (ms)')
     axs[row].set_ylabel('Count Local')
-    plt.show()
+    #plt.show()
     
 
 """Check the signal quality searching for nan values or amplitude higher than a threshold of mean frequency higher than the reference frequency.

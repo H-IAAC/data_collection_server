@@ -6,7 +6,7 @@ from Logger import Logger
 
 class CsvUtils:
     @staticmethod
-    def checkFile(file):
+    def checkFile(postprocessor_directory, file):
         Logger.log(f"Checking file {file}")
         df_all = pandas.read_csv(file)
         columns=['Experiment Name', 'Sensor Name', 'Power Consumption (mAh)', 'Sensor Frequency (Hz)','Timestamp Server', 'Timestamp Local', 'Value 1', 'Value 2', 'Value 3', 'Data Status']
@@ -17,7 +17,7 @@ class CsvUtils:
         clean_size = len(df_clean)
 
         if original_size != clean_size:
-            Logger.log_error(f"Checking file removed {original_size - clean_size} rows {len(df_clean.columns)}")
+            Logger.log_error(postprocessor_directory, f"Checking file removed {original_size - clean_size} rows {len(df_clean.columns)}")
             vers_name=[element for element in df_.columns if 'HIAACApp v'  in element]
             df_clean[vers_name]=''
             df_clean.to_csv('clean'+file, sep=';',index=False)
