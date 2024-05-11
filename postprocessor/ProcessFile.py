@@ -66,8 +66,8 @@ class ProcessFile:
                 Logger.log("No action for file " + self.filename + self.extension)
                 return
         except Exception as e:
-            Logger.log_error(postprocessor_directory, f"Failed when processing: [{self.filename}]. {e}");
-            Logger.log_error(postprocessor_directory, f"Check if video was correctly uploaded.");
+            Logger.log_error(postprocessor_directory, f"Failed when processing: [{self.filename}]. {e}")
+            Logger.log_error(postprocessor_directory, f"Check if video was correctly uploaded.")
 
     def handle_csv_when_no_video(self, postprocessor_directory):
         # Without the video we cant process the file, as we dont have timestamps values
@@ -83,16 +83,16 @@ class ProcessFile:
     def handle_csv(self, csv_fullpath, postprocessor_directory, video_metadata):
         metadata = self.get_video_metadata(video_metadata)
         
-        CsvUtils.checkFile(csv_fullpath)
+        #CsvUtils.checkFile(csv_fullpath)
 
         try:
             # Remove rows before and after the video timestamps
             if not CsvUtils.drop_row_lower_than(csv_fullpath, int(metadata['startTimestamp'])):
-                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows lower than initial timestamp. (Data were collected before recording the video.)");
+                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows lower than initial timestamp. (Data were collected before recording the video.)")
                 return
                 
             if not CsvUtils.drop_row_bigger_than(csv_fullpath, int(metadata['endTimestamp'])):
-                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows bigger than initial timestamp. (Data were collected after recording the video.)");
+                Logger.log_error(postprocessor_directory, f"{self.filename} is invalid! need to check {[csv_fullpath]} timestamp after drop rows bigger than initial timestamp. (Data were collected after recording the video.)")
                 return
             
             processed_files = CsvUtils.split(csv_fullpath, postprocessor_directory, int(metadata['startTimestamp']))
@@ -129,7 +129,7 @@ class ProcessFile:
             #VideoConverter.hide_faces_using_mediapipe(preprocessor_mp4_fullpath, hidden_face_video)
             VideoConverter.hide_faces_using_yolo(preprocessor_mp4_fullpath, hidden_face_video)
         except Exception as e:
-            Logger.log_error(postprocessor_directory, f"Could not process video file {preprocessor_mp4_fullpath}: {e}");
+            Logger.log_error(postprocessor_directory, f"Could not process video file {preprocessor_mp4_fullpath}: {e}")
 
         # Delete the original video, and then rename the new video
         #os.remove(postprocessor_mp4_fullpath)

@@ -215,7 +215,7 @@ def check_quality(vector,timespamp,ref_frequency,ref_amplitud):
     period=w_duration/timespamp.size
     ref_period= (1/ref_frequency)*1000
     if period>=ref_period:
-        Logger.log("...period", period)
+        Logger.log(f"...period: {period}")
         return False
 
     return True
