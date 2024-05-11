@@ -62,42 +62,44 @@ title_ : string
 """
 def plot_fun_window(dff,point_time,title_,path_out):
     Logger.log("plot_fun_window")
-    (r,w)=dff.shape
-    if point_time<150:
-        return
-    if point_time>(r-150):
-        point_time=r-150
-    point_l= point_time-150  
-    point_h= point_time +150
+    try:
+        (r,w)=dff.shape
+        if point_time<150:
+            return
+        if point_time>(r-150):
+            point_time=r-150
+        point_l= point_time-150  
+        point_h= point_time +150
 
-    acc=np.array(dff[point_l:point_h,6:9],dtype=float)
-    time_=pd.to_datetime(dff[point_l:point_h,5], unit='ms').tz_localize('UTC').tz_convert('Etc/GMT+3',)
-    time_v=pd.DataFrame({'date':time_})
-    time_v['date']=pd.to_datetime(time_v['date'])
-    time_v['time']=time_v['date'].dt.strftime('%H:%M:%S.%f')
-    time=time_v['time'].to_numpy()
-    label_acc=[' acc X',' acc Y','acc Z']
-    color_acc=['r','b','g']
-    col_=1
-    row_=3
-    
-    fig, axs = plt.subplots(ncols=col_, nrows=row_, figsize=(20, 10),layout="constrained")
+        acc=np.array(dff[point_l:point_h,6:9],dtype=float)
+        time_=pd.to_datetime(dff[point_l:point_h,5], unit='ms').tz_localize('UTC').tz_convert('Etc/GMT+3',)
+        time_v=pd.DataFrame({'date':time_})
+        time_v['date']=pd.to_datetime(time_v['date'])
+        time_v['time']=time_v['date'].dt.strftime('%H:%M:%S.%f')
+        time=time_v['time'].to_numpy()
+        label_acc=[' acc X',' acc Y','acc Z']
+        color_acc=['r','b','g']
+        col_=1
+        row_=3
+        
+        fig, axs = plt.subplots(ncols=col_, nrows=row_, figsize=(20, 10),layout="constrained")
 
-    for row in range(row_):
-        for col in range(col_):
-            axs[row].plot(time, acc[:,row], color_acc[row], linewidth=0.8)
-            axs[row].title.set_text(label_acc[row]+' '+dff[0,1])
-            axs[row].set_xlabel('datatime ->')
-            axs[row].set_ylabel('Acceleration (m/s^2)')
-            axs[row].grid(True)
-            axs[row].xaxis.set_major_locator(ticker.MultipleLocator(80)) 
-            axs[row].tick_params(axis='x', rotation=0)
+        for row in range(row_):
+            for col in range(col_):
+                axs[row].plot(time, acc[:,row], color_acc[row], linewidth=0.8)
+                axs[row].title.set_text(label_acc[row]+' '+dff[0,1])
+                axs[row].set_xlabel('datatime ->')
+                axs[row].set_ylabel('Acceleration (m/s^2)')
+                axs[row].grid(True)
+                axs[row].xaxis.set_major_locator(ticker.MultipleLocator(80)) 
+                axs[row].tick_params(axis='x', rotation=0)
 
-    img_output = path_out + title_.split("/")[-1][:-4] + str(time[150])+'.png'
-    fig.savefig(img_output)                        
-    Logger.log(f"plot_fun_window savefig path: {img_output}")
-    #plt.show()
-
+        img_output = path_out + title_.split("/")[-1][:-4] + str(time[150])+'.png'
+        fig.savefig(img_output)                        
+        Logger.log(f"plot_fun_window savefig path: {img_output}")
+        #plt.show()
+    except Exception as e:
+        Logger.log_error(f"plot_fun_window failed for {title_}. exception: {e}")
 
 """Process all dataset in order to search the acc peaks higher than a threshold and generate a plot figure of window using the 
 function plot_fun_window
