@@ -7,7 +7,8 @@ from Logger import Logger
 import cv2
 import moviepy.editor as mpe
 from ultralytics import YOLO
-os.environ['OPENCV_GPU_DEVICE_ID'] = '0'
+import subprocess
+import torch
 
 class VideoConverter:
     #@staticmethod
@@ -143,7 +144,12 @@ class VideoConverter:
         Logger.log(f"-> {video_in} video_fps: {video_fps}")
         
         out = ffmpegcv.VideoWriter(video_out, 'h264', video_fps)
+
         yolo = YOLO(model)
+
+        if VideoConverter.is_cuda_present():
+            Logger.log(f"-> VideoConverter using GPU")
+            yolo.to('cuda')
 
         while True:
             ret, img = cap.read()
@@ -193,3 +199,18 @@ class VideoConverter:
 
         final = video_mute.set_audio(audio)
         final.write_videofile(video_out, audio=True, codec='libx264', audio_codec='aac')
+
+
+    @staticmethod
+    def is_cuda_present():
+        try:
+            subprocess.check_output('nvidia-smi')
+            Logger.log('Nvidia GPU detected!')
+        except Exception:
+            Logger.log('No Nvidia GPU in system!')
+
+        Logger.log(f"torch.cuda.is_available(): {torch.cuda.is_available()}")
+        Logger.log(f"torch.cuda.device_count(): {torch.cuda.device_count()}")
+        Logger.log(f"torch.cuda.current_device(): {torch.cuda.current_device()}")
+
+        return torch.cuda.is_available()
