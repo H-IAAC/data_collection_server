@@ -5,7 +5,9 @@
 - **server.sh:** Script to start/stop the solution.
 
 ## Installation using docker images:
-  docker compose up -d
+> docker compose -f docker-compose_cuda.yml up
+  or
+> docker compose -f docker-compose_cpu.yml up
 
 ## Installation without docker:
 ### Pre processor:

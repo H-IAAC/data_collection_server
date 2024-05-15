@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  server:
+    image: hiaactools/viewer-tool:latest
+    ports:
+      - 8080:8080
+      - 7998:7998
+    volumes:
+      - ./files/pre:/pre_dataset
+      - ./files/post:/post_dataset
+      - type: bind
+        source: ./files/logs/post
+        target: /usr/src/h-iaac/captureX/postprocessor/logs
+        read_only: false
+        bind:
+          create_host_path: true
+    environment:
+      - TZ=America/Sao_Paulo
+
+  jupyter:
+    image: hiaactools/viewer-tool-jupyter:latest
+    ports:
+      - 8888:8888
+      - 8050:8050
+      - 8997:8997

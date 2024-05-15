@@ -17,6 +17,14 @@ services:
           create_host_path: true
     environment:
       - TZ=America/Sao_Paulo
+      
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
   jupyter:
     image: hiaactools/viewer-tool-jupyter:latest
