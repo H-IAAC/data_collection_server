@@ -1,23 +1,14 @@
 class Graph {
 
     // Number of pixels for each 1000ms in csv
-    #graph_X_max_value;
-    #graph_X_total_of_seconds;
-
     x;
     y;
 
-    #y_min_value;
-    #y_max_value;
-
-    #graph_data;
-
-    #data;
-
-    constructor(element_id, graph_data, graph_timelapse) {
+    constructor(element_id, graph_data, graph_timelapse, offset) {
         this.element_id = element_id;
         this.graph_data = graph_data;
         this.graph_timelapse = graph_timelapse;
+        this.offset = Number(offset);
     }
 
     createdGraph(csv_file, currentTime) {
@@ -36,7 +27,7 @@ class Graph {
             .attr("height", "250px")
             .append("g")
             .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+                  "translate(" + margin.left + "," + margin.top + ")");
 
         d3.csv(self.graph_data.path + csv_file, function (data) {
             return { date: data["VideoTimelapse"],
@@ -63,7 +54,6 @@ class Graph {
             var x_bar = svg.append("g")
                 .attr("class", self.element_id + "_axisX")
                 .attr("transform", "translate(0," + height + ")");
-
 
             x_bar.call(d3.axisBottom(self.x));
             x_bar.append("g")
@@ -139,8 +129,6 @@ class Graph {
 
     }
 
-
-
     getMinMax(data) {
         var minValue1 = data.reduce((min, p) => Math.min(p.value1, min), data[0].value1);
         var minValue2 = data.reduce((min, p) => Math.min(p.value2, min), data[0].value2);
@@ -165,6 +153,11 @@ class Graph {
     update(currentTime) {
         self = this;
         var svg = d3.selectAll("svg");
+
+        if (self.offset >= 0)
+            currentTime = currentTime + self.offset;
+        else
+            currentTime = currentTime - Math.abs(self.offset);
 
         this.x.domain([currentTime - 1000, (this.graph_X_max_value + (currentTime + 1000))]);
 

@@ -15,6 +15,9 @@
     </div>
     <div class="column_right" style="background-color:#bbb;">
         <div class="graph_subtitles">
+            <b id="offsetTxt">Offset:</b>
+            <input type="text" id="offset" value="0"></input>
+            <button onclick="uploadOffset()" id="offsetBtn">set</button>
             <canvas style="background-color: red;"></canvas>
             <label class="graph_subtitles_child">X (value 1)</label>
             <canvas style="background-color: green;"></canvas>
@@ -61,8 +64,10 @@
     var data_stringified = '<%- JSON.stringify(data) %>';
     var data = JSON.parse(data_stringified);
 
-    const graph1 = new Graph("svg_graph_01", data, 1500);
-    const graph2 = new Graph("svg_graph_02", data, 1500);
+    const offset = document.getElementById('offset');
+
+    var graph1 = new Graph("svg_graph_01", data, 1500, offset.value);
+    var graph2 = new Graph("svg_graph_02", data, 1500, offset.value);
 
     const video = document.querySelector('video');
     const graph_selector_01 = document.getElementById('graph_selector_01');
@@ -100,5 +105,16 @@
         if (typeof graph2.x !== "undefined")
             graph2.update(video.currentTime * 1000);
     };
+
+    function uploadOffset(directory) {
+        graph1 = new Graph("svg_graph_01", data, 1500, offset.value);
+        graph2 = new Graph("svg_graph_02", data, 1500, offset.value);
+
+        document.getElementById("svg_graph_01").replaceChildren();
+        graph1.createdGraph(graph_selector_01.value, video.currentTime * 1000);
+
+        document.getElementById("svg_graph_02").replaceChildren();
+        graph2.createdGraph(graph_selector_02.value, video.currentTime * 1000);
+    }
 
 </script>

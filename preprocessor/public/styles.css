@@ -30,6 +30,21 @@
     margin-bottom: auto;
 }
 
+#offset {
+    margin-bottom: 20px;
+    border-radius: 0px;
+    padding: 9px;
+    width: 15%;
+}
+
+#offsetBtn {
+    margin-right: 20px;
+}
+
+#offsetTxt {
+    margin-top: auto;
+}
+
 .bottom {
     margin-bottom: 80px;
     margin-top: 40px;
