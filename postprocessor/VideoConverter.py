@@ -125,7 +125,7 @@ class VideoConverter:
         #VideoConverter.merge_audio(video_in, video_out)
 
     @staticmethod
-    def hide_faces_using_yolo(video_in, video_out, expand=False):
+    def hide_faces_using_yolo(video_in, video_out, expand=True):
         cap = cv2.VideoCapture(video_in)
 
         # set yolov8n model
@@ -150,17 +150,22 @@ class VideoConverter:
         if VideoConverter.is_cuda_present():
             Logger.log(f"-> VideoConverter using GPU")
             yolo.to('cuda')
+        else:
+            Logger.log(f"-> VideoConverter using CPU")
+
+        countFrames = 0
 
         while True:
             ret, img = cap.read()
 
             if ret:
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                results = yolo.predict(img)
 
-                names = yolo.names
-                face_id = list(names)[list(names.values()).index('face')]
-                boxes = results[0].boxes
+                if (countFrames % 15) == 0:
+                    results = yolo.predict(img)
+                    names = yolo.names
+                    face_id = list(names)[list(names.values()).index('face')]
+                    boxes = results[0].boxes
 
                 for box in boxes:
                     if box.cls == face_id:  # Check if the detected object is a person
@@ -181,6 +186,7 @@ class VideoConverter:
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
                 out.write(img)
 
+                countFrames = countFrames + 1
             else:
                 break
         
@@ -203,14 +209,21 @@ class VideoConverter:
 
     @staticmethod
     def is_cuda_present():
+
+        ret = False
+
         try:
             subprocess.check_output('nvidia-smi')
             Logger.log('Nvidia GPU detected!')
         except Exception:
             Logger.log('No Nvidia GPU in system!')
 
-        Logger.log(f"torch.cuda.is_available(): {torch.cuda.is_available()}")
-        Logger.log(f"torch.cuda.device_count(): {torch.cuda.device_count()}")
-        Logger.log(f"torch.cuda.current_device(): {torch.cuda.current_device()}")
+        try:
+            ret = torch.cuda.is_available()
+            Logger.log(f"torch.cuda.is_available(): {torch.cuda.is_available()}")
+            Logger.log(f"torch.cuda.device_count(): {torch.cuda.device_count()}")
+            Logger.log(f"torch.cuda.current_device(): {torch.cuda.current_device()}")
+        except Exception:
+            Logger.log('torch.cuda error')
 
-        return torch.cuda.is_available()
+        return ret
