@@ -135,8 +135,8 @@ class ProcessFile:
         #os.remove(postprocessor_mp4_fullpath)
         shutil.move(hidden_face_video, postprocessor_mp4_fullpath)
 
-        os.remove(self.fullpath)
-        os.remove(preprocessor_mp4_fullpath)
+        #os.remove(self.fullpath)
+        #os.remove(preprocessor_mp4_fullpath)
 
         # Need to check if there are .csv files, in the 'waiting' directory
         waiting_dir = f"{postprocessor_directory}waiting{os.sep}"
