@@ -127,6 +127,7 @@ class ProcessFile:
             hidden_face_video = f"{postprocessor_directory}facehidden-{mp4_file}"
             Logger.log(f"  VideoConverter: {preprocessor_mp4_fullpath} to: {hidden_face_video}")
             #VideoConverter.hide_faces_using_mediapipe(preprocessor_mp4_fullpath, hidden_face_video)
+            # VideoConverter.hide_faces_using_yolo_faces(preprocessor_mp4_fullpath, hidden_face_video)
             VideoConverter.hide_faces_using_yolo(preprocessor_mp4_fullpath, hidden_face_video)
         except Exception as e:
             Logger.log_error(postprocessor_directory, f"Could not process video file {preprocessor_mp4_fullpath}: {e}")
