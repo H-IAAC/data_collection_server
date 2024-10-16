@@ -34,7 +34,7 @@ class VideoConverter:
 
         video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        video_fps = int(cap.get(cv2.CAP_PROP_FPS))
+        video_fps = cap.get(cv2.CAP_PROP_FPS)
         
         print(f"-> VIDEO IN  video_fps: {cap.get(cv2.CAP_PROP_FPS)}")
 
@@ -98,7 +98,6 @@ class VideoConverter:
 
                             cv2.rectangle(img, (bbox[0], bbox[1]), (bbox[2] + factor, upper_bbox_height + factor), (0, 0, 0), -1)
 
-
                 # Clear the buffer if no person is detected for the threshold duration
                 if no_person_detected_count > max_no_detection_frames:
                     bbox_buffer.clear()  # Clear the buffer
@@ -117,16 +116,11 @@ class VideoConverter:
 
             frame_count += 1  # Increment the frame counter
 
-        print(f'times of failed detection: {counter}')
-        
-        
-        
-        
-        
-        
+        print(f'times of failed detection: {counter}')    
+
         cap_out = cv2.VideoCapture(video_out)
         print(f"-> VIDEO OUT video_fps: {video_fps}")
-        
+
         cap.release()
         out.release()
 
