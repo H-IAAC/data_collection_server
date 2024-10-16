@@ -118,11 +118,11 @@ class VideoConverter:
 
         print(f'times of failed detection: {counter}')    
 
-        cap_out = cv2.VideoCapture(video_out)
-        print(f"-> VIDEO OUT video_fps: {video_fps}")
-
         cap.release()
         out.release()
+
+        cap_out = cv2.VideoCapture(video_out)
+        print(f"-> VIDEO OUT video_fps: {video_fps}")
 
 
     @staticmethod
@@ -145,3 +145,4 @@ class VideoConverter:
             Logger.log('torch.cuda error')
 
         return ret
+
