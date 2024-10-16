@@ -4,10 +4,13 @@ const express = require('express'),
     views = require('./routes/views'),
     logger = require('./utils/logger'),
     utils = require('./utils/utils'),
+    processMonitor = require('./utils/processMonitor'),
     consts = require('./utils/consts'),
     bodyParser = require('body-parser'),
     path = require('path'),
-    favicon = require('serve-favicon');
+    favicon = require('serve-favicon'),
+    cookieParser = require("cookie-parser"),
+    auth = require('./services/authenticationService.js');
 
 var serverPort = 3000;
 
@@ -19,8 +22,8 @@ const args = process.argv.slice(2);
 
 if (args[0] && args[1] && args[2]) {
     serverPort = args[0];
-    consts.PREPROCESSING_DIR = args[1];
-    consts.POSTPROCESSING_DIR = args[2];
+    consts.PREPROCESSING_DIR = path.join(__dirname + path.sep + args[1]);
+    consts.POSTPROCESSING_DIR = path.join(__dirname + path.sep + args[2]);
 
     utils.create_directory(consts.PREPROCESSING_DIR);
 } else {
@@ -32,14 +35,31 @@ if (args[0] && args[1] && args[2]) {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use('/api', routes);
 app.use('/', views);
 
+// Static Files, check auth to allow access to pre and post static directories
+app.use(function(req, res, next) {
+    if (!req.url.indexOf(consts.PREPROCESSING_STATIC) ||
+        !req.url.indexOf(consts.POSTPROCESSING_STATIC)) {
+        if (!auth.jwt_verify(req.cookies, req.originalUrl))
+            return res.send(401);
+    }
+    next();
+});
+
 // Static Files
-app.use(express.static(path.join(__dirname + path.sep + 'public')));
-app.use(express.static(path.join(__dirname + path.sep + path.basename(consts.PREPROCESSING_DIR))));
-app.use(express.static(path.join(__dirname + path.sep + path.basename(consts.POSTPROCESSING_DIR))));
+app.use('/static', express.static(path.join(__dirname + path.sep + 'public')));
+
+logger.info('Defining path: ' + path.join(__dirname + path.sep + path.basename(consts.PREPROCESSING_DIR)) + ' as ' + consts.PREPROCESSING_STATIC);
+logger.info('Defining path: ' + path.join(__dirname + path.sep + path.basename(consts.POSTPROCESSING_DIR)) + ' as ' + consts.POSTPROCESSING_STATIC);
+
+app.use(consts.PREPROCESSING_STATIC, express.static(path.join(__dirname + path.sep + path.basename(consts.PREPROCESSING_DIR))));
+app.use(consts.POSTPROCESSING_STATIC, express.static(path.join(__dirname + path.sep + path.basename(consts.POSTPROCESSING_DIR))));
+
+// Set favicon
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 
 // Set views directory path
@@ -51,11 +71,16 @@ app.set('view engine', 'ejs');
 /**
  * set app to listen on port 'serverPort'
  */
-app.listen(serverPort, function () {
+const server = app.listen(serverPort, function () {
+    console.log("--- -------------------- ---");
     console.log("--- H-IAAC - Viewer Tool ---");
+    console.log("--- ----- Starting ----- ---");
     logger.info("server is running on port " + serverPort);
-
+    logger.info("server PID " + process.pid);
     logger.info("  preprocessor_path: " + consts.PREPROCESSING_DIR);
     logger.info("  postprocessor_path: " + consts.POSTPROCESSING_DIR);
 });
 
+server.requestTimeout = 3600000; // 1 hour
+
+processMonitor.monitor_exit();

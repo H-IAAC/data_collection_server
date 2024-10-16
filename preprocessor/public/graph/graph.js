@@ -1,23 +1,14 @@
 class Graph {
 
     // Number of pixels for each 1000ms in csv
-    #graph_X_max_value;
-    #graph_X_total_of_seconds;
-
     x;
     y;
 
-    #y_min_value;
-    #y_max_value;
-
-    #graph_data;
-
-    #data;
-
-    constructor(element_id, graph_data, graph_timelapse) {
+    constructor(element_id, graph_data, graph_timelapse, offset) {
         this.element_id = element_id;
         this.graph_data = graph_data;
         this.graph_timelapse = graph_timelapse;
+        this.offset = Number(offset);
     }
 
     createdGraph(csv_file, currentTime) {
@@ -36,11 +27,14 @@ class Graph {
             .attr("height", "250px")
             .append("g")
             .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+                  "translate(" + margin.left + "," + margin.top + ")");
 
         d3.csv(self.graph_data.path + csv_file, function (data) {
-            return { date: data["Timestamp"], value1: data["Value 1"], value2: data["Value 2"], value3: data["Value 3"] }
-
+            return { date: data["VideoTimelapse"],
+                     value1: (isNaN(data["Value 1"])) ? 0 : data["Value 1"],
+                     value2: (isNaN(data["Value 2"])) ? 0 : data["Value 2"],
+                     value3: (isNaN(data["Value 3"])) ? 0 : data["Value 3"]
+                    }
         }, function (data) {
             self.data = data;
 
@@ -61,7 +55,6 @@ class Graph {
                 .attr("class", self.element_id + "_axisX")
                 .attr("transform", "translate(0," + height + ")");
 
-
             x_bar.call(d3.axisBottom(self.x));
             x_bar.append("g")
                 .attr("class", "tick tickRef")
@@ -74,15 +67,9 @@ class Graph {
             //console.log("data_limited stringify: " + JSON.stringify(data_limited));          
 
             // Graph axis Y
-            var y_min_v1 = Math.min(...data.map(o => o.value1));
-            var y_min_v2 = Math.min(...data.map(o => o.value2));
-            var y_min_v3 = Math.min(...data.map(o => o.value3));
-            self.y_min_value = Math.min(y_min_v1, y_min_v2, y_min_v3);
-
-            var y_max_v1 = Math.max(...data.map(o => o.value1));
-            var y_max_v2 = Math.max(...data.map(o => o.value2));
-            var y_max_v3 = Math.max(...data.map(o => o.value3));
-            self.y_max_value = Math.max(y_max_v1, y_max_v2, y_max_v3);
+            var min_max = self.getMinMax(data);
+            self.y_min_value = min_max[0];
+            self.y_max_value = min_max[1];
 
             self.y = d3.scaleLinear()
                 .domain([self.y_min_value, self.y_max_value])
@@ -142,6 +129,18 @@ class Graph {
 
     }
 
+    getMinMax(data) {
+        var minValue1 = data.reduce((min, p) => Math.min(p.value1, min), data[0].value1);
+        var minValue2 = data.reduce((min, p) => Math.min(p.value2, min), data[0].value2);
+        var minValue3 = data.reduce((min, p) => Math.min(p.value3, min), data[0].value3);
+
+        var maxValue1 = data.reduce((max, p) => Math.max(p.value1, max), data[0].value1);
+        var maxValue2 = data.reduce((max, p) => Math.max(p.value2, max), data[0].value2);
+        var maxValue3 = data.reduce((max, p) => Math.max(p.value3, max), data[0].value3);
+
+         return [Math.min(minValue1, minValue2, minValue3), Math.max(maxValue1, maxValue2, maxValue3)];
+    }
+
     removeUnwantedXaxisValues(svg) {
         svg.selectAll("[class$='_axisX']").selectAll(".tick")
             .each(function (d) {
@@ -154,6 +153,11 @@ class Graph {
     update(currentTime) {
         self = this;
         var svg = d3.selectAll("svg");
+
+        if (self.offset >= 0)
+            currentTime = currentTime + self.offset;
+        else
+            currentTime = currentTime - Math.abs(self.offset);
 
         this.x.domain([currentTime - 1000, (this.graph_X_max_value + (currentTime + 1000))]);
 

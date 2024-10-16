@@ -1,23 +1,12 @@
 var progress;
 
-const exp_input = document.getElementById('exp_input');
-const user_input = document.getElementById('user_input');
 const message = document.getElementById('message');
 const progressUpload = document.getElementsByClassName("progressUpload")[0];
 const duration = document.getElementById('duration');
 const video = document.createElement('video');
-const experiment = getUrlParameter('experiment');
-const user = getUrlParameter('user');
+const directory = getUrlParameter('directory');
 
 addProgressBar();
-
-if (experiment) {
-    exp_input.style.display = "none";
-}
-
-if (user) {
-    user_input.style.display = "none";
-}
 
 function videoSelected() {
     const file = document.getElementById('file').files[0];
@@ -47,26 +36,24 @@ function getUrlParameter(param) {
 function upload() {
     const file = document.getElementById('file').files[0];
 
-    if (!file || ((!experiment) && (exp_input.value == "")) || ((!user) && (user_input.value == ""))) {
-        message.innerText = 'Verifique os dados de entrada.';
-        return;
-    }
-
-    const timestamp = getFileModifiedTimestamp(file);
-
     resetProgressBar();
     var form = new FormData();
     var req = new XMLHttpRequest();
 
+    let endTimestamp = getFileModifiedTimestamp(file);
+
     req.upload.addEventListener("progress", updateProgress);
     req.open("POST", "/api/video", true);
-
+    form.append("directory", (directory) ? directory : "");
     form.append("file", file);
-    form.append("experiment", (experiment) ? experiment : exp_input.value);
-    form.append("subject", (user) ? user : user_input.value);
-    form.append("timestamp", timestamp);
     form.append("videoduration", video.duration);
+    form.append("startTimestamp", (Date.parse(endTimestamp) - (Math.floor(video.duration * 1000))));
+    form.append("endTimestamp", Date.parse(endTimestamp));
     form.append("overwrite", false);
+
+    console.log('duration: ' + video.duration);
+    console.log('startTimestamp: ' + (Date.parse(endTimestamp) - (Math.floor(video.duration * 1000))));
+    console.log('endTimestamp: ' + Date.parse(endTimestamp));
 
     req.onreadystatechange = function () {
         if (req.readyState === 4) {

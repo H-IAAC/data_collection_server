@@ -2,19 +2,66 @@ const fs = require('fs'),
     formidable = require('formidable'),
     path = require('path'),
     logger = require('../utils/logger'),
+    consts = require('../utils/consts'),
     utils = require('../utils/utils'),
-    service = require("../services/experimentService");;
+    service = require("../services/experimentService");
 
-const MAX_FILE_SIZE = 2000 * 1024 * 1024; // 2Gb
+const MAX_FILE_SIZE = 5000 * 1024 * 1024; // 5Gb
 
 module.exports = {
     /**
      * POST
      * 
      * Upload video.
+     * Test using curl:
+     * curl --progress-bar -X POST http://localhost:8080/api/video -H 'Content-Type: multipart/form-data' -F file=@1.mp4 -F directory="1 2 5" | cat
      */
     video: function (req, res) {
         const form = new formidable.IncomingForm({ keepExtensions: true, maxFileSize: MAX_FILE_SIZE });
+
+        logger.info("Video uploading");
+
+        /*const requiredFields = ['directory'];
+
+        form
+        .on ('field', function (name, value) {
+            console.log ("fields: " + name + " - " + value) ;
+            console.log ("requiredFields.indexOf(name): " + requiredFields.indexOf(name)) ;
+
+            if (requiredFields.indexOf(name) == -1 || !value) {
+                // field is required and its value is empty
+                console.log ("fields throw error") ;
+                form._error('Required field is empty!');
+                return;
+            } else {
+                console.log ("fields ok") ;
+            }
+
+           // if (!fields.directory) {
+           //     const msg = "Video upload require parameters: directory, videoduration, startTimestamp and endTimestamp."
+           //     logger.error(msg);
+           //     return res.status(400).json({ status: msg });
+           // }
+
+        })
+        .on ('file', function (name, file) {
+            console.log ("file: " + name + " - " + file) ;
+            //fs.copyFile (file.path, form.uploadDir + '/' + file.name) ;
+            //filename =file.name ;
+        })
+        .on ('end', function () {
+            console.log ('-> upload done') ;
+            //if ( filename == '' )
+            //    res.status (500).end ('No file submitted!') ;
+            //res.json ({ 'name': filename }) ;
+        });
+        
+        form.on('error', function (message) {
+            console.log ('-> ERROR: ' + message) ;
+            res.status(400).json({ status: message });
+            return;
+        })*/
+
 
         // Parse form content
         form.parse(req, async function (err, fields, files) {
@@ -24,51 +71,63 @@ module.exports = {
                 return res.status(500).json({ status: "Error: " + err });
             }
 
-            if (!files.file || !files.file.filepath || !fields.experiment || !fields.overwrite || !fields.timestamp || !fields.subject) {
-                logger.error("Invalid request");
-                return res.status(400).json({ status: "Request is missing data (file, experiment, overwrite and timestamp are required)." });
+            if (!files.file || !files.file.filepath ||
+                !fields.directory) {
+                const msg = "Video upload require parameters: File, directory, videoduration, startTimestamp and endTimestamp."
+                logger.error(msg);
+                return res.status(400).json({ status: msg });
             }
 
-            if (files.file.filepath.split('.').pop() !== 'mp4') {
-                logger.error("Invalid upload, bad request video extension: " + files.file.filepath.split('.').pop());
-                return res.status(400).json({ status: "Invalid video file extension." });
+            const uploaded_filename = files.file.originalFilename; // File name from the file been uploaded
+            const uploaded_filepath = files.file.filepath;         // Path to the file been uploaded, normally it is in \tmp
+
+            logger.info("Receiving video: " + uploaded_filename + ", to directory: " + fields.directory);
+
+            if (path.parse(uploaded_filename).ext.toLocaleLowerCase() !== '.mp4') {
+                const msg = "Invalid video file extension: " + uploaded_filename;
+                logger.error(msg);
+                return res.status(400).json({ status: msg });
             }
 
-            logger.info("Receiving video: " + files.file.originalFilename + " experiment: " + fields.experiment + " user: " + fields.subject);
+            const output_dir = consts.PREPROCESSING_DIR + path.sep + fields.directory + path.sep;
+            const video_output_path = output_dir + uploaded_filename;
+            const metadata_output_path = output_dir + path.parse(uploaded_filename).name + ".video";
 
-            var uploadLocation_dir = service.create_experiment(fields.experiment + ' [' + fields.subject + ']');
-            var uploadLocationVideoFile = uploadLocation_dir + files.file.originalFilename;
-            var uploadLocationVideoMeta = uploadLocation_dir + path.parse(files.file.originalFilename).name + ".video";
+            // Check if this experiment has a video available
+            if (service.experiment_has_video(fields.directory)) {
+                const msg = "Video upload ignored! A video already exists for this experiment " + fields.directory + ".";
+                logger.info(msg);
 
-            // When overwrite flag is 'false'
-            // Need to fail if a file with same file name already exists
-            if ((fields.overwrite && fields.overwrite === 'false') && fs.existsSync(uploadLocationVideoFile)) {
-                logger.info("Ignoring file " + uploadLocationVideoFile + " as it already exists.");
-                return res.status(500).json({ status: "Upload ignored. A file with this experiment and name already exists." });
+                fs.rmSync(uploaded_filepath, {
+                    force: true,
+                });
+
+                return res.status(500).json({ status: msg });
             }
 
-            // Need to check if this experiment has no video, each experiment must have only 1 video.
-            // so get all content from this
-            var uploadLocation_files = await service.get_directory_content(uploadLocation_dir, fields.experiment);
-            for (let file of uploadLocation_files) {
-                if (file.isVideo === true) {
-                    logger.info("Ignoring file " + files.file.originalFilename + ", experiment " + fields.experiment + " already has a video.");
-                    return res.status(500).json({ status: "Upload ignored. A video already exists for this experiment." });
+            service.create_experiment_path(output_dir);
+
+            logger.info("Copying file " + uploaded_filepath + " to " + video_output_path + ".");
+
+            fs.copyFile(uploaded_filepath, video_output_path, (err) => {
+                if (err) {
+                    const msg = "Copying file " + uploaded_filepath + " failed: " + err;
+                    logger.error(msg);
+                    return res.status(500).json({ status: msg});
                 }
-            }
 
-            // Get file content on tmp dir.
-            var rawData = fs.readFileSync(files.file.filepath);
+                // Create the metadata file for the video
+                fs.writeFileSync(metadata_output_path, createVideoMetadata(uploaded_filename, fields));
 
-            // Uploads are sent to operating systems tmp dir by default,
-            // need to copy correct destination.
-            fs.writeFileSync(uploadLocationVideoFile, rawData);
+                logger.info("Receiving video: " + uploaded_filename + ", to directory: " + fields.directory + " - [success]");
 
-            fs.writeFileSync(uploadLocationVideoMeta, createVideoMetadata(files.file.originalFilename, fields));
+                fs.rmSync(uploaded_filepath, {
+                    force: true,
+                });
 
-            logger.info("video: " + files.file.originalFilename + " experiment: " + fields.experiment +  " user: " + fields.subject + " [success]");
+                return res.json({ status: "Success" });
+            });
 
-            return res.json({ status: "Success" });
         });
     },
 
@@ -81,14 +140,14 @@ module.exports = {
         const form = new formidable.IncomingForm({ keepExtensions: true, maxFileSize: MAX_FILE_SIZE });
 
         // Parse form content
-        form.parse(req, async function (err, fields, files) {
+        form.parse(req, async function (err, fields, files) {            
 
             if (err) {
                 logger.error("error: " + err);
                 return res.status(500).json({ status: "Error: " + err });
             }
 
-            if (!files.file || !files.file.filepath || !fields.experiment || !fields.subject) {
+            if (!files.file || !files.file.filepath || !fields.experiment || !fields.subject || !fields.activity) {
                 logger.error("Invalid request");
                 return res.status(400).json({ status: "Request is missing required parameters (file and experiment are required)." });
             }
@@ -97,75 +156,129 @@ module.exports = {
                 fields.overwrite = 'false';
             }
 
-            logger.info("Receiving file: " + files.file.originalFilename + " experiment: " + fields.experiment + " user: " + fields.subject);
+            const uploaded_filename = files.file.originalFilename; // File name from the file been uploaded
+            const uploaded_filepath = files.file.filepath;         // Path to the file been uploaded, normally it is in \tmp
 
-            // Uploads are sent to operating systems tmp dir by default,
-            // need to copy correct destination.
-            var tmpPath = files.file.filepath;
+            logger.info("Receiving file: " + uploaded_filename + 
+                        " experiment: " + fields.experiment + " user: " + fields.subject);
 
-            var uploadLocation_dir = service.create_experiment(fields.experiment + ' [' + fields.subject + ']');
+            const output_dir = service.create_experiment(fields.experiment, fields.activity, fields.subject);
+            const file_output_path = output_dir + uploaded_filename;
 
-            uploadLocation = uploadLocation_dir + files.file.originalFilename;
-
-            // If a file with same file name already exists, then return an error and not overwrite the file.
-            if (fields.overwrite === 'false' && fs.existsSync(uploadLocation)) {
-                logger.info("Ignoring file " + uploadLocation + " as it already exists in the " + uploadLocation + " directory.");
-                return res.status(500).json({ status: "Upload ignored. A file with experiment and name already exists." });
+            if (path.extname(uploaded_filename) === "csv") {
+                if (await utils.validate_csv(uploaded_filepath, uploaded_filename) !== "success") {
+                    return res.status(500).json({ status: "Invalid CSV name and content (" + uploaded_filename + ")" });
+                }
             }
 
-            if (await utils.validate_csv(tmpPath, files.file.originalFilename) !== "success") {
-                return res.status(500).json({ status: "Invalid CSV name and content (" + files.file.originalFilename + ")" });
-            }
+            logger.info("Copying file " + uploaded_filepath + " to " + file_output_path + ".");
+            fs.copyFile(uploaded_filepath, file_output_path, (err) => {
+                if (err) {
+                    const msg = "Copying file " + uploaded_filepath + " failed: " + err;
+                    logger.error(msg);
+                    return res.status(500).json({ status: msg});
+                }
 
-            // TODO: Need to check best approach to check timestamp between CSV and Video.
-            // Check if there is a video already uploaded
-            //if (await checkCSVTimestamp(tmpPath, uploadLocation_dir) === false) {
-            //    logger.error("Upload of CSV " + tmpPath + " failed.");
-            //    logger.error(tmpPath + ": CSV timestamp dont match Video timestamp");
-            //    return res.status(500).json({ status: "Invalid CSV (Video and CSV timestamp don't match.)" });
-            //}
+                logger.info("Receiving file: " + uploaded_filename + 
+                            " experiment: " + fields.experiment + " user: " + fields.subject + " [success]");
 
-            // Get file content on tmp dir.
-            var rawData = fs.readFileSync(tmpPath);
 
-            fs.writeFileSync(uploadLocation, rawData);
+                fs.rmSync(uploaded_filepath, {
+                    force: true,
+                });
 
-            logger.info("Receiving file: " + files.file.originalFilename + " experiment: " + fields.experiment  + " user: " + fields.subject + " [success]");
+                return res.json({ status: "Success" });
+            });
 
-            return res.json({ status: "Success" });
         });
+    },
+
+    /**
+     * POST
+     * 
+     * Upload config.
+     */
+    config: function (req, res) {
+        const form = new formidable.IncomingForm({ keepExtensions: true, maxFileSize: MAX_FILE_SIZE });
+
+        // Parse form content
+        form.parse(req, async function (err, fields, files) {
+
+            if (err) {
+                logger.error("error: " + err);
+                return res.status(500).json({ status: "Error: " + err });
+            }
+
+            if (!files.file || !files.file.filepath || !fields.experiment || !fields.subject || !fields.activity) {
+                logger.error("Invalid request");
+                return res.status(400).json({ status: "Request is missing required parameters (file and experiment are required)." });
+            }
+
+            const uploaded_filename = files.file.originalFilename; // File name from the file been uploaded
+            const uploaded_filepath = files.file.filepath;         // Path to the file been uploaded, normally it is in \tmp
+
+            logger.info("Receiving config: " + uploaded_filename + 
+                        " for experiment: [" + fields.experiment +
+                        "] user: [" + fields.subject +
+                        "] activity: [" + fields.activity + "]");
+
+            const output_dir = service.create_experiment(fields.experiment, fields.activity, fields.subject);
+            const file_output_path = output_dir + uploaded_filename;
+
+            logger.info("Copying file " + uploaded_filepath + " to " + file_output_path + ".");
+            fs.copyFile(uploaded_filepath, file_output_path, (err) => {
+                if (err) {
+                    const msg = "Copying file " + uploaded_filepath + " failed: " + err;
+                    logger.error(msg);
+                    return res.status(500).json({ status: msg});
+                }
+
+                logger.info("Receiving config: " + uploaded_filename + 
+                    " for experiment: [" + fields.experiment +
+                    "] user: [" + fields.subject +
+                    "] activity: [" + fields.activity + "] [success]");
+
+                fs.rmSync(uploaded_filepath, {
+                    force: true,
+                });
+
+                return res.json({ status: "Success" });
+            });
+
+        });
+    },
+
+    /**
+     * GET
+     * 
+     * Return config.
+     */
+    getConfig: function (req, res) {
+
+        if (!req.query.experiment || !req.query.subject || !req.query.activity) {
+            logger.error("Invalid request");
+            return res.status(400).json({ status: "Request is missing required parameter." });
+        }
+
+        const experiment = req.query.experiment;
+        const subject = req.query.subject;
+        const activity = req.query.activity;
+
+        logger.info("Checking config for experiment: [" + experiment + "] user: [" + subject + "] activity: [" + activity + "]");
+
+        var config = service.get_experiment_config(experiment, activity, subject);
+
+        logger.info("Returning config: [" + config + "]");
+
+        return res.send(config);
     }
 }
 
 function createVideoMetadata(filename, values) {
     return '[Metadata]' + '\n' +
-        'experiment = ' + values.experiment + '\n' +
+        'experiment = ' + values.directory + '\n' +
         'filename = ' + filename + '\n' +
-        'videoDuration = ' + values.videoduration + '\n' +
-        'startTimestamp = ' + (Date.parse(values.timestamp) - (Math.floor(values.videoduration * 1000))) + '\n' +
-        'endTimestamp = ' + Date.parse(values.timestamp);
-}
-
-async function checkCSVTimestamp(csv_file, uploadLocation_dir) {
-    var csv_lastTimestamp = await utils.get_csv_last_timestamps(csv_file);
-    var video_endTimestamp = 0;
-
-    let file_already_uploaded = await fs.promises.readdir(uploadLocation_dir);
-    file_already_uploaded.forEach(function (file) {
-        if (path.extname(file).toLowerCase() === '.video') {
-            var ini = utils.convert_ini_to_json(uploadLocation_dir + file);
-            video_endTimestamp = ini.Metadata.endTimestamp;
-        }
-    });
-
-    console.log("video_endTimestamp: " + video_endTimestamp);
-    console.log("csv_lastTimestamp:  " + csv_lastTimestamp);
-
-    // If timestamp in CSV file is shorter then video timestamp, it means
-    // that video ends before the csv contant.
-    if ((video_endTimestamp !== 0) && (csv_lastTimestamp < video_endTimestamp))
-        // In this case, CSV is invalid.
-        return false;
-
-    return true;
+        'duration = ' + values.videoduration + '\n' +
+        'startTimestamp = ' + values.startTimestamp + '\n' +
+        'endTimestamp = ' + values.endTimestamp;
 }

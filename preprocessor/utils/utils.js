@@ -1,10 +1,28 @@
 const fs = require('fs'),
     logger = require('../utils/logger'),
+    consts = require('../utils/consts'),
     { parse } = require("csv-parse"),
     readLastLines = require('read-last-lines'),
-    path = require('path');
+    path = require('path'),
+    os = require('os');
 
 module.exports = {
+    /**
+     * @return {json}           Return content from ./config/config.json
+     */
+    get_config: function () {
+
+        logger.info("Config file: " + consts.CONFIG_FILE_PATH);
+
+        if (fs.existsSync(consts.CONFIG_FILE_PATH)) {
+            let rawdata = fs.readFileSync(consts.CONFIG_FILE_PATH);
+            return JSON.parse(rawdata);
+        }
+
+        logger.error("ERROR! Missing config file: " + consts.CONFIG_FILE_PATH);
+        return {};
+    },
+
     /**
      * @param {type} dir_path   Path from the directory to be created.
      * @return {type}           Return true if directory created, false if fails or already exists.
@@ -13,7 +31,7 @@ module.exports = {
         if (!fs.existsSync(dir_path)) {
             // .. if not, create it.
             logger.info("Creating directory: " + dir_path);
-            fs.mkdirSync(dir_path);
+            fs.mkdirSync(dir_path, { recursive: true });
         } else {
             return false;
         }
@@ -29,12 +47,12 @@ module.exports = {
      */
     async validate_csv(file_path, file_name) {
 
-        // Filename format must be "<activity>_<on-body_position>__20230110.232916.csv"
-        var name_splitted = file_name.split("_");
-        var onbody_position = name_splitted[name_splitted.length - 3];
-        if (onbody_position === undefined) {
+        // Filename format must be "<user>_<activity>_<on-BodyPosition>__20230110.232916.csv"
+        if (file_name.split("_").length !== 5)
             return "fail";
-        }
+
+        if (!file_name.split("_")[0] || !file_name.split("_")[1] || !file_name.split("_")[2])
+            return "fail";
 
         // Check if csv content is consistent, this verification is not checking
         // if rows have the correct columns, it is a generic verification.
@@ -55,52 +73,67 @@ module.exports = {
         })
     },
 
-    /**
-     * Get the timestamp from the last row in a csv file.
-     * 
-     * @param {type} file_path   Path to the csv file.
-     */
-    async get_csv_last_timestamps(csv_file) {
-        return readLastLines.read(csv_file, 1)
-            .then((line) => {
-                return line.split(";")[4].replaceAll('"', '');
-            });
+    extract_experiment_from_directory(directory) {
+        // Extract experiment and user from directory name
+        // directory name example: '<experiment> [<user>]'
+        return directory.substring(0, directory.indexOf(" ["));
     },
 
-    /**
-     * Convert a ini file to json object.
-     * 
-     * @param {type} file_path   Path to the ini file.
-     */
-    convert_ini_to_json(file_path) {
-        var ini_data = fs.readFileSync(file_path, 'utf8');
+    extract_user_from_directory(directory) {
+        // Extract experiment and user from directory name
+        // directory name example: '<experiment> [<user>]'
+        return directory.substring(directory.lastIndexOf(" [") + 2, directory.lastIndexOf("]"));
+    },
 
-        var regex = {
-            section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
-            param: /^\s*([^=]+?)\s*=\s*(.*?)\s*$/,
-            comment: /^\s*;.*$/
-        };
-        var value = {};
-        var lines = ini_data.split(/[\r\n]+/);
-        var section = null;
-        lines.forEach(function (line) {
-            if (regex.comment.test(line)) {
-                return;
-            } else if (regex.param.test(line)) {
-                var match = line.match(regex.param);
-                if (section) {
-                    value[section][match[1]] = match[2];
-                } else {
-                    value[match[1]] = match[2];
-                }
-            } else if (regex.section.test(line)) {
-                var match = line.match(regex.section);
-                value[match[1]] = {};
-                section = match[1];
-            } else if (line.length == 0 && section) {
-                section = null;
-            };
+    extract_activity_from_directory(directory) {
+        return directory.substring(directory.indexOf(" [") + 2, directory.indexOf("] "));
+    },
+
+    number_of_csv_files_in_directory(directory) {
+
+        if (!fs.existsSync(directory)) return 0;
+
+        let count = 0;
+        var files = fs.readdirSync(directory);
+
+        files.forEach(file => {
+            if (file.toLowerCase().includes('.csv'))
+                count++;
         });
-        return value;
+
+        return count;
+    },
+
+    get_directory_video(directory) {
+
+        let ret = 'none';
+
+        if (!fs.existsSync(directory)) return ret;
+
+        var files = fs.readdirSync(directory);        
+
+        files.forEach(file => {
+            if (file.toLowerCase().includes('.mp4'))
+                ret = file;
+        });
+
+        return ret;
+    },
+
+    get_template(directory) {
+
+        var content = '{}';
+
+        if (!fs.existsSync(directory)) return content;
+
+        var files = fs.readdirSync(directory);        
+
+        files.forEach(file => {
+            if (file.toLowerCase().includes('.json')) {
+                content = fs.readFileSync(directory + path.sep + file);
+            }
+        });
+
+        return content;
     }
 }
