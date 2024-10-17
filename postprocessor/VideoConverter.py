@@ -12,10 +12,10 @@ class VideoConverter:
     def hide_faces_using_yolo(
         video_in,
         video_out,
-        model = f"{os.path.dirname(os.path.abspath(__file__)) }/yolov10n.pt",
+        model = f"{os.path.dirname(os.path.abspath(__file__)) }/yolo11l.pt",
         expand_factor=0,
         size_bb_buffer=15,
-        frame_count_threshold=5,
+        frame_count_threshold=3,
         ):
         """
         Hide faces in a video using YOLO model.
