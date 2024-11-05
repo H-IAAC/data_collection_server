@@ -20,7 +20,7 @@ RUN apt update && apt install -y \
 
 RUN python3 -m pip install --upgrade pip setuptools wheel
 
-EXPOSE 8083
+EXPOSE 8080
 
 ENV PYTHONUNBUFFERED=1
 ENV SRC_PATH=/usr/src/h-iaac/captureX
