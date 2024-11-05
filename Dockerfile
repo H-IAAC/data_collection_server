@@ -20,7 +20,7 @@ RUN apt update && apt install -y \
 
 RUN python3 -m pip install --upgrade pip setuptools wheel
 
-EXPOSE 8080
+EXPOSE 8083
 
 ENV PYTHONUNBUFFERED=1
 ENV SRC_PATH=/usr/src/h-iaac/captureX
@@ -45,6 +45,9 @@ RUN mkdir -p ${PRE_PROCESSOR_PATH}/_postprocessor
 
 RUN ln -s ${PRE_PROCESSOR_PATH}/_preprocessor /pre_dataset
 RUN ln -s ${PRE_PROCESSOR_PATH}/_postprocessor /post_dataset
+
+RUN apt-get update && apt-get install -y libmediainfo0v5
+
 
 WORKDIR ${SRC_PATH}
 CMD ["sh", "run.sh"]
