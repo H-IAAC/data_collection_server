@@ -4,6 +4,7 @@ import ffmpegcv
 from ultralytics import YOLO
 import torch
 from pymediainfo import MediaInfo
+from Logger import Logger
 
 @staticmethod
 def get_info_video(video_path):
@@ -17,7 +18,7 @@ def get_info_video(video_path):
                 
                 return {
                     "video_path": video_path,
-                    "ID": track.track_id,
+                   # "ID": track.track_id,
                     "Formato": track.format,
                     "Perfil de Formato": track.format_profile,
                     "Codec ID": track.codec_id,
@@ -34,31 +35,6 @@ def get_info_video(video_path):
                 }
 
 
-def verificar_pontos_no_quadrado(keypoints_data, x_min, y_min, x_max, y_max):
-    """
-    Verifica se todos os pontos dos keypoints estão dentro de um quadrado definido.
-    
-    Args:
-        keypoints_data (list): Lista de keypoints, onde cada keypoint tem a forma [ponto_index][coordenada_index][x, y].
-        x_min (float): Coordenada mínima em x do quadrado.
-        y_min (float): Coordenada mínima em y do quadrado.
-        x_max (float): Coordenada máxima em x do quadrado.
-        y_max (float): Coordenada máxima em y do quadrado.
-    
-    Returns:
-        bool: Retorna True se todos os pontos estão dentro do quadrado, False caso contrário.
-    """
-    for i in range(7):  # Verificar pontos de índice 0 até 6 (face)
-        try:
-            x = keypoints_data[0][i][0]
-            y = keypoints_data[0][i][1]
-            if not (x_min <= x <= x_max and y_min <= y <= y_max):
-                return False
-        except IndexError:
-            print(f"Ponto {i} não está disponível nos keypoints.")
-            return False
-    return True
-
 def draw_rectangle(img, keypoint,box):
     keypoints_data = keypoint.xy.cpu().numpy()
     x1_b, y1_b, x2_b, y2_b = box.tolist()
@@ -71,7 +47,7 @@ def draw_rectangle(img, keypoint,box):
                 cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), y2_), (0, 0, 0), -1)
                 return img
         except IndexError:
-            print("Left shoulder not detected")    
+            Logger.log("Left shoulder not detected")    
     y2=y1_b +(y2_b-y1_b)/2    
     cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), int(y2)), (0, 0, 0), -1)
     return img
@@ -97,27 +73,27 @@ class VideoConverter:
             save_images_dir (str, optional): Directory to save images with keypoints. Defaults to 'saved_images'.
         """
         start_time = time.time()  
-        print("-> hide_faces_using_yolo new buffer")
+        Logger.log("-> hide_faces_using_yolo new buffer")
         cap = cv2.VideoCapture(video_in)
 
         video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         video_fps = cap.get(cv2.CAP_PROP_FPS)
 
-        print(f"-> VIDEO IN  video_fps: {cap.get(cv2.CAP_PROP_FPS)}")
+        Logger.log(f"-> VIDEO IN  video_fps: {cap.get(cv2.CAP_PROP_FPS)}")
 
         if video_width >= 540 or video_width >= 960:
             video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) / 2)
             video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) / 2)
 
-        print(f"-> {video_in} video_height: {video_height} video_width: {video_width}")
-        print(f"-> {video_in} video_fps: {video_fps}")
+        Logger.log(f"-> {video_in} video_height: {video_height} video_width: {video_width}")
+        Logger.log(f"-> {video_in} video_fps: {video_fps}")
 
         out = ffmpegcv.VideoWriter(video_out, 'h264', video_fps)
 
         yolo = YOLO(model)
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        print(f"Using device: {device}")
+        Logger.log(f"Using device: {device}")
         yolo.to(device)
 
         while True:
@@ -132,6 +108,8 @@ class VideoConverter:
             out.write(img)
         cap.release()
         out.release()
-        print(f"Processing completed in {(time.time()-start_time)/60} min.")
+        Logger.log(f"Processing completed in {(time.time()-start_time)/60} min.")
+        Logger.log(get_info_video(video_in))
+        Logger.log(get_info_video(video_out))
 
     
