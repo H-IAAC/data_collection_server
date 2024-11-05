@@ -1,10 +1,82 @@
-import os
+import os,time
 import cv2
 import ffmpegcv
-from Logger import Logger
 from ultralytics import YOLO
 import torch
-import time
+from pymediainfo import MediaInfo
+
+@staticmethod
+def get_info_video(video_path):
+    media_info = MediaInfo.parse(video_path)
+        
+    for track in media_info.tracks:
+        if track.track_type == 'Video':
+                frame_rate = float(track.frame_rate) if track.frame_rate and isinstance(track.frame_rate, (int, float, str)) else 0
+                # Calculate total number of frames
+                quantidade_frames = int((track.duration / 1000) * frame_rate)  # Total frames
+                
+                return {
+                    "video_path": video_path,
+                    "ID": track.track_id,
+                    "Formato": track.format,
+                    "Perfil de Formato": track.format_profile,
+                    "Codec ID": track.codec_id,
+                    "Duração (s)": track.duration / 1000,  # Duration in seconds
+                    "Bit rate (kb/s)": track.bit_rate,
+                    "Largura (pixels)": track.width,
+                    "Altura (pixels)": track.height,
+                    "Taxa de Aspecto": track.display_aspect_ratio,
+                    "Taxa de Quadros (FPS)": frame_rate,
+                    "Modo de Taxa de Quadros": track.frame_rate_mode,
+                    "Taxa de Quadros Mínima": getattr(track, 'frame_rate_min', 'None'),
+                    "Taxa de Quadros Máxima": getattr(track, 'frame_rate_max', 'None'),
+                    "Total de Frames": quantidade_frames
+                }
+
+
+def verificar_pontos_no_quadrado(keypoints_data, x_min, y_min, x_max, y_max):
+    """
+    Verifica se todos os pontos dos keypoints estão dentro de um quadrado definido.
+    
+    Args:
+        keypoints_data (list): Lista de keypoints, onde cada keypoint tem a forma [ponto_index][coordenada_index][x, y].
+        x_min (float): Coordenada mínima em x do quadrado.
+        y_min (float): Coordenada mínima em y do quadrado.
+        x_max (float): Coordenada máxima em x do quadrado.
+        y_max (float): Coordenada máxima em y do quadrado.
+    
+    Returns:
+        bool: Retorna True se todos os pontos estão dentro do quadrado, False caso contrário.
+    """
+    for i in range(7):  # Verificar pontos de índice 0 até 6 (face)
+        try:
+            x = keypoints_data[0][i][0]
+            y = keypoints_data[0][i][1]
+            if not (x_min <= x <= x_max and y_min <= y <= y_max):
+                return False
+        except IndexError:
+            print(f"Ponto {i} não está disponível nos keypoints.")
+            return False
+    return True
+
+def draw_rectangle(img, keypoint,box):
+    keypoints_data = keypoint.xy.cpu().numpy()
+    x1_b, y1_b, x2_b, y2_b = box.tolist()
+    for i in range(5,7,1):        
+        x, y = None, None
+        try:
+            x, y = keypoints_data[0][i][0], keypoints_data[0][i][1]
+            if x is not None and (x, y) != (0, 0):
+                y2_=int(y)
+                cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), y2_), (0, 0, 0), -1)
+                return img
+        except IndexError:
+            print("Left shoulder not detected")    
+    y2=y1_b +(y2_b-y1_b)/2    
+    cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), int(y2)), (0, 0, 0), -1)
+    return img
+
+
 class VideoConverter:
     @staticmethod
     def hide_faces_using_yolo(
@@ -61,3 +133,5 @@ class VideoConverter:
         cap.release()
         out.release()
         print(f"Processing completed in {(time.time()-start_time)/60} min.")
+
+    
