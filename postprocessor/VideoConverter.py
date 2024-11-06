@@ -8,14 +8,12 @@ from Logger import Logger
 
 @staticmethod
 def get_info_video(video_path):
-    media_info = MediaInfo.parse(video_path)
-        
+    media_info = MediaInfo.parse(video_path)        
     for track in media_info.tracks:
         if track.track_type == 'Video':
                 frame_rate = float(track.frame_rate) if track.frame_rate and isinstance(track.frame_rate, (int, float, str)) else 0
                 # Calculate total number of frames
-                quantidade_frames = int((track.duration / 1000) * frame_rate)  # Total frames
-                
+                quantidade_frames = int((track.duration / 1000) * frame_rate)  # Total frames                
                 return {
                     "video_path": video_path,
                    # "ID": track.track_id,
@@ -47,7 +45,7 @@ def draw_rectangle(img, keypoint,box):
                 cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), y2_), (0, 0, 0), -1)
                 return img
         except IndexError:
-            Logger.log("Left shoulder not detected")    
+            Logger.log_video("Left shoulder not detected")    
     y2=y1_b +(y2_b-y1_b)/2    
     cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), int(y2)), (0, 0, 0), -1)
     return img
@@ -72,28 +70,29 @@ class VideoConverter:
             frame_count_threshold (int, optional): Threshold to decide how many frames to skip for detection. Defaults to 5.
             save_images_dir (str, optional): Directory to save images with keypoints. Defaults to 'saved_images'.
         """
+        dir_log=os.path.dirname(os.path.abspath(video_out))
         start_time = time.time()  
-        Logger.log("-> hide_faces_using_yolo new buffer")
+        Logger.log_video(dir_log,"-> hide_faces_using_yolo new buffer")
         cap = cv2.VideoCapture(video_in)
 
         video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         video_fps = cap.get(cv2.CAP_PROP_FPS)
 
-        Logger.log(f"-> VIDEO IN  video_fps: {cap.get(cv2.CAP_PROP_FPS)}")
+        Logger.log_video(dir_log,f"-> VIDEO IN  video_fps: {cap.get(cv2.CAP_PROP_FPS)}")
 
         if video_width >= 540 or video_width >= 960:
             video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) / 2)
             video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) / 2)
 
-        Logger.log(f"-> {video_in} video_height: {video_height} video_width: {video_width}")
-        Logger.log(f"-> {video_in} video_fps: {video_fps}")
+        Logger.log_video(dir_log,f"-> {video_in} video_height: {video_height} video_width: {video_width}")
+        Logger.log_video(dir_log,f"-> {video_in} video_fps: {video_fps}")
 
         out = ffmpegcv.VideoWriter(video_out, 'h264', video_fps)
 
         yolo = YOLO(model)
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        Logger.log(f"Using device: {device}")
+        Logger.log_video(dir_log,f"Using device: {device}")
         yolo.to(device)
 
         while True:
@@ -108,8 +107,8 @@ class VideoConverter:
             out.write(img)
         cap.release()
         out.release()
-        Logger.log(f"Processing completed in {(time.time()-start_time)/60} min.")
-        Logger.log(get_info_video(video_in))
-        Logger.log(get_info_video(video_out))
+        Logger.log_video(dir_log,f"Processing completed in {(time.time()-start_time)/60} min.")
+        Logger.log_video(dir_log,get_info_video(video_in))
+        Logger.log_video(dir_log,get_info_video(video_out))
 
     
