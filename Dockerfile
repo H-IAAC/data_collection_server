@@ -1,16 +1,16 @@
-FROM ubuntu:jammy
+FROM ubuntu:jammy-20211029
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update && apt upgrade -y
+RUN apt-get update && apt upgrade -y
 
 # install essential packages
-RUN apt install -y curl gpg
+RUN apt-get install -y curl gpg
 
 # add Node.js, PHP and ImageMagick repos
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 
-RUN apt update && apt install -y \
+RUN apt-get update && apt install -y \
   nodejs \
   python3 \
   python3-pip \
@@ -45,6 +45,9 @@ RUN mkdir -p ${PRE_PROCESSOR_PATH}/_postprocessor
 
 RUN ln -s ${PRE_PROCESSOR_PATH}/_preprocessor /pre_dataset
 RUN ln -s ${PRE_PROCESSOR_PATH}/_postprocessor /post_dataset
+
+RUN apt-get update && apt-get install -y libmediainfo0v5
+
 
 WORKDIR ${SRC_PATH}
 CMD ["sh", "run.sh"]
