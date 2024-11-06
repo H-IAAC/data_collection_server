@@ -34,3 +34,16 @@ class Logger:
         file_object = open(log_file, 'a+')
         file_object.write(msg + "\n")
         file_object.close()
+
+    @staticmethod
+    def log_video(path, msg):
+        log_file = 'log.log'
+
+        now = datetime.now()
+        current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+
+        msg = f"{current_time} {msg}"
+
+        file_object = open(path + log_file, 'a+')
+        file_object.write("LOG: " + msg + "\n")
+        file_object.close()
