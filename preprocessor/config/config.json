@@ -1,0 +1,8 @@
+{
+    "jwtKey" : "zy1ahXqACiw0xE2YCqyLBXikGrBr5we4lIxv8ORfRcB5l2OiYqsuJASpIsiXGdlZcVmxxWL9eAeRdSYT5jt_ZA",
+    "jwtIss" : "H-IAAC",
+    "jwtAud" : "vm.hiaac.ic.unicamp.br",
+    "jwtAlgo" : "HS512",
+    "tokenid" : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&_-",
+    "password" : "$2a$10$PIZpQOyHKmIY3pfdgwnONeT5eQ3Drmm5GRYelhAozmP1uUloiWAim"
+}
