@@ -2,7 +2,7 @@ version: '3'
 
 services:
   server:
-    image: hiaactools/viewer-tool:latest
+    image: hiaactools/viewer-tool_cpu:3.1
     ports:
       - 8080:8080
       - 7998:7998
@@ -15,6 +15,9 @@ services:
         read_only: false
         bind:
           create_host_path: true
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       - TZ=America/Sao_Paulo
 
