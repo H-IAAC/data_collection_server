@@ -4,12 +4,21 @@
 - **postprocessor:** Python tool responsible for prepare csv data for visualization, checking timelapse, sync with video, split into multiple files, cleanning unnecessary content, ...
 - **server.sh:** Script to start/stop the solution.
 
-## Installation using docker images:
-> docker compose -f docker-compose_cuda.yml up
-  or
-> docker compose -f docker-compose_cpu.yml up
+## Build Docker:
+**Note:** When you are building the your own docker image, the code base will be the same from your git branch. So please, **make sure you are in the correct branch**. And configurations as password and server url (for auth token) may need your own configuration, so please **remember to review the config file** in *preprocessor/config/config.json*.
 
-## Installation without docker:
+- If you are running with CUDA for video processing:
+```
+docker compose -f docker-compose_cuda.yml build
+docker compose -f docker-compose_cuda.yml up
+```
+- Otherwise, use this command for CPU processing:
+```
+docker compose -f docker-compose_cpu.yml build
+docker compose -f docker-compose_cpu.yml up
+```
+## Build without Docker:
+**Note:** Step below are only necessary if you are not using docker.
 ### Pre processor:
 1) Check system requirements:
 - node v18.12.1
