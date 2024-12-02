@@ -5,7 +5,7 @@ from ultralytics import YOLO
 import torch
 from pymediainfo import MediaInfo
 from Logger import Logger
-
+torch.backends.cudnn.benchmark = True
 @staticmethod
 def get_info_video(video_path):
     media_info = MediaInfo.parse(video_path)        
@@ -42,12 +42,12 @@ def draw_rectangle(img, keypoint,box):
             x, y = keypoints_data[0][i][0], keypoints_data[0][i][1]
             if x is not None and (x, y) != (0, 0):
                 y2_=int(y)
-                cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), y2_), (0, 0, 0), -1)
+                cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), y2_+10), (0, 0, 0), -1)
                 return img
         except IndexError:
             Logger.log_video("Left shoulder not detected")    
     y2=y1_b +(y2_b-y1_b)/2    
-    cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), int(y2)), (0, 0, 0), -1)
+    cv2.rectangle(img, (int(x1_b),int(y1_b)), (int(x2_b), int(y2)+10), (0, 0, 0), -1)
     return img
 
 
@@ -73,6 +73,10 @@ class VideoConverter:
         dir_log=os.path.dirname(os.path.abspath(video_out))
         start_time = time.time()  
         Logger.log_video(dir_log,"-> hide_faces_using_yolo new buffer")
+        if os.path.exists(model):
+            Logger.log_video(dir_log,f"Modelo encontrado: {model}")
+        else:
+            Logger.log_video(dir_log,f"Modelo não encontrado: {model}")
         cap = cv2.VideoCapture(video_in)
 
         video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -89,22 +93,30 @@ class VideoConverter:
         Logger.log_video(dir_log,f"-> {video_in} video_fps: {video_fps}")
 
         out = ffmpegcv.VideoWriter(video_out, 'h264', video_fps)
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
         yolo = YOLO(model)
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         Logger.log_video(dir_log,f"Using device: {device}")
         yolo.to(device)
-
+        yolo.model.fuse()
+        yolo.to(device).half() 
+        frame_count = 0
+        update_interval = 500 
         while True:
             ret, img = cap.read()
             if not ret:
                 break
-            results = yolo([img])
+            results = yolo([img],verbose=False)
             for result in results:
                 keypoints = result.keypoints  
                 for index, box in enumerate(result.boxes.xyxy ):
                     img=draw_rectangle(img, keypoints[index],box)                    
             out.write(img)
+            frame_count += 1
+    
+            if frame_count % update_interval == 0:
+                Logger.log_video(dir_log,f"Processado {frame_count} de {total_frames} frames")
         cap.release()
         out.release()
         Logger.log_video(dir_log,f"Processing completed in {(time.time()-start_time)/60} min.")
