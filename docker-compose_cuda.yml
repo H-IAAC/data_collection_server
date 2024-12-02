@@ -29,9 +29,3 @@ services:
               count: 1
               capabilities: [gpu]
 
-  jupyter:
-    image: hiaactools/viewer-tool-jupyter:latest
-    ports:
-      - 8888:8888
-      - 8050:8050
-      - 8997:8997
