@@ -120,7 +120,13 @@ class VideoConverter:
         cap.release()
         out.release()
         Logger.log_video(dir_log,f"Processing completed in {(time.time()-start_time)/60} min.")
-        Logger.log_video(dir_log,get_info_video(video_in))
-        Logger.log_video(dir_log,get_info_video(video_out))
+        info_in=get_info_video(video_in)
+        info_out=get_info_video(video_out)
+        Logger.log_video(dir_log,info_in)
+        Logger.log_video(dir_log,info_out)
+        Logger.log_video(dir_log,f"duração v_in {info_in['Duração (s)']} duração v_out {info_out['Duração (s)']}")
+        Logger.log_video(dir_log,f"Taxa de Quadros (FPS) v_in {info_in['Taxa de Quadros (FPS)']} Taxa de Quadros (FPS) v_out {info_out['Taxa de Quadros (FPS)']}")
+        Logger.log_video(dir_log,f"Total de Frames v_in {info_in['Total de Frames']} Total de Frames v_out {info_out['Total de Frames']}")
+        
 
     
