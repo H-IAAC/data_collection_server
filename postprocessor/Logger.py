@@ -37,7 +37,7 @@ class Logger:
 
     @staticmethod
     def log_video(path, msg):
-        log_file = 'log.log'
+        log_file = '/log.log'
 
         now = datetime.now()
         current_time = now.strftime("%Y-%m-%d %H:%M:%S")
