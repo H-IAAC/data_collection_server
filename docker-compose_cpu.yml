@@ -2,7 +2,7 @@ version: '3'
 
 services:
   server:
-    image: hiaactools/viewer-tool_cpu:3.1
+    image: hiaactools/viewer-tool_cpu:4.0
     ports:
       - 8080:8080
       - 7998:7998
