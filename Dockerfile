@@ -42,12 +42,13 @@ RUN pip3 install -r requirements.txt
 
 RUN mkdir -p ${PRE_PROCESSOR_PATH}/_preprocessor
 RUN mkdir -p ${PRE_PROCESSOR_PATH}/_postprocessor
+RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+RUN wget -O ${POST_PROCESSOR_PATH}/yolo11x-pose.pt https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11x-pose.pt
 
 RUN ln -s ${PRE_PROCESSOR_PATH}/_preprocessor /pre_dataset
 RUN ln -s ${PRE_PROCESSOR_PATH}/_postprocessor /post_dataset
 
 RUN apt-get update && apt-get install -y libmediainfo0v5
-
 
 WORKDIR ${SRC_PATH}
 CMD ["sh", "run.sh"]
