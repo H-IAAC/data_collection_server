@@ -4,6 +4,27 @@
 - **postprocessor:** Python tool responsible for prepare csv data for visualization, checking timelapse, sync with video, split into multiple files, cleanning unnecessary content, ...
 - **server.sh:** Script to start/stop the solution.
 
+## Version 4.0 tests and results:
+
+- ### Static Test:
+  - **Original video duration:** 13.10 minutes
+  - **Time to process the video:** 06.53 minutes
+  - **Percentage with mask on:** 97.79%
+  
+- ### Bench Test:
+  - **Original video duration:** 13.30 minutes
+  - **Time to process the video:** 06.59 minutes
+  - **Percentage with mask on:** 96.68%
+  
+- ### Indoor/Final Test:
+  - **Original video duration:** 02.45 minutes
+  - **Time to process the video:** 01.36 minutes
+  - **Percentage with mask on:** 99.42%
+
+  *Full tests results can be found at:* [Tests results](https://drive.google.com/file/d/1G-EFDLe-UU6y-JhldMcDE6GRYTQBmiMx/view?usp=sharing)
+
+
+
 ## Build Docker:
 **Note:** When you are building the your own docker image, the code base will be the same from your git branch. So please, **make sure you are in the correct branch**. And configurations as password and server url (for auth token) may need your own configuration, so please **remember to review the config file** in *preprocessor/config/config.json*.
 
