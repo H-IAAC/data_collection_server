@@ -5,18 +5,22 @@
 - **server.sh:** Script to start/stop the solution.
 
 ## Build Docker:
-**Note:** When you are building the your own docker image, the code base will be the same from your git branch. So please, **make sure you are in the correct branch**. And configurations as password and server url (for auth token) may need your own configuration, so please **remember to review the config file** in *preprocessor/config/config.json*.
+When you are building the your own docker image, the code base will be the same from your git branch. So please, **make sure you are in the correct branch**. And configurations as password and server url (for auth token) may need your own configuration, so please **remember to review the config file** in *preprocessor/config/config.json*.
 
 - If you are running with CUDA for video processing:
 ```
 docker compose -f docker-compose_cuda.yml build
 docker compose -f docker-compose_cuda.yml up
 ```
+_Note: Only use the **build command** when you are building a new image, otherwise, you can go straight to the **up command**._
+
 - Otherwise, use this command for CPU processing:
 ```
 docker compose -f docker-compose_cpu.yml build
 docker compose -f docker-compose_cpu.yml up
 ```
+_Note: Only use the **build command** when you are building a new image, otherwise, you can go straight to the **up command**._
+
 ## Build without Docker:
 **Note:** Step below are only necessary if you are not using docker.
 ### Pre processor:
@@ -63,5 +67,34 @@ docker compose -f docker-compose_cpu.yml up
 
 ## Workflow:
 ![image](https://github.com/H-IAAC/viewer_tool/assets/117912051/8c9757e7-24d1-45ee-981a-bb88e9c57bed)
+
+## Testing:
+This solution follows the REST (Representational State Transfer) software architectural style, as illustrated in the diagrams above, there are some APIs that can be used by external tools to interact with this solution.
+> These APIs are intented to be used by the Android mobile app and the Jupyter notebook, but it is also accessable to any other tool. Nowadays there are lots of different REST tools available, as Postman, Insomnia, EchoAPI, SoapUI, cURL just to cite a few.
+So in order to simulate or test this solution, you can choose any REST tools of you preference.
+### Send files to the server
+### Sending a file (.zip or .csv)
+To simulate a HTTP request, we need 2 configurations:
+```
+URL: http://<address>:<port>/api/file
+Parameters: File (.zip or .cvs), experiment, subject, activity
+```
+#### Example:
+Using Insomnia tool to POST a file.
+![image](https://github.com/user-attachments/assets/57d968b3-7208-4684-a592-a86552ed9f6c)
+
+
+### Sending a video (.mp4)
+To simulate a HTTP request, we need 2 configurations:
+```
+URL: http://<address>:<port>/api/video
+Parameters: File (.mp4), videoDuration, startTimestamp, endTimestamp and directory
+```
+**Note:** where *directory* format is '_experiment [activity] [subject]_'
+#### Example:
+Using Insomnia tool to POST the video file.
+![image](https://github.com/user-attachments/assets/662718da-0e84-4161-bf61-f43850b0223f)
+
+
 
 
