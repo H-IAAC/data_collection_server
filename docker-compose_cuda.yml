@@ -2,7 +2,7 @@ version: '3'
 
 services:
   server:
-    image: hiaactools/viewer-tool_cuda:4.0
+    image: registry.gitlab.ic.unicamp.br/edson/data_collection_server:4.0
     ports:
       - 8080:8080
       - 7998:7998
